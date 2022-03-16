@@ -32,7 +32,6 @@
   display: flex;
   flex-wrap: wrap;
   padding-top: 5px;
-  padding-bottom: 15px;  
 }
 
 /********************** filtres **********************/
@@ -116,7 +115,7 @@ article {
   font-weight: bold;
 }
 .description p {
-  height: 87px;
+  height: 89px;
   width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;

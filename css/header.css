@@ -1,22 +1,25 @@
-header {
+header a {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-header img {
+header a img {
   height: 47px;
   width: 52px;
 }
-header h1 {
+header a h1 {
   font-family: "DM Sans", sans-serif;
   color: #d04f4f;
-  font-size: 2.36em;
+  font-size: 2.3em;
   margin: 0px 0 16px 0;
+}
+header a:hover {
+  cursor: pointer;
 }
 
 /* responsive */
 @media screen and (max-width: 520px) {
-  header h1 {
+  header a h1 {
     font-size: 2em;
     white-space: nowrap;
   }
