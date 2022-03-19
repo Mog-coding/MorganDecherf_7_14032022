@@ -115,16 +115,16 @@ article {
   font-weight: bold;
 }
 .description p {
-  height: 89px;
+  height: 106px;
   width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: "Roboto", sans-serif;
   font-size: 0.78em;
   margin: 0;
-  /* line clamp: ellipsis sur multilignes */
+  /* line clamp: ellipsis sur multilignes (6 et 91)*/
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
 }
 

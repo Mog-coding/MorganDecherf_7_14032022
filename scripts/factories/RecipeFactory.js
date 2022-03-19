@@ -1,41 +1,38 @@
 export default class RecipeFactory {
-    constructor(objet) {
-        this.objet = objet;
+    constructor(objetRecipe) {
+        this.objetRecipe = objetRecipe;
     }
+
+    // retourne le html <article> à partir d'un objet recette
     createRecipeCards() {
-        const article = document.createElement("article");
-        article.innerHTML = `
+        const articleRecipe = document.createElement("article");
+        articleRecipe.innerHTML = `
         <div class="imgRecette"></div>
         <div class="legende">
             <div class="titre">
-                <h2>${this.objet.name}</h2>
-                <span><img src="assets/icons/clock.svg" alt="" />${this.objet.time} min</span>
+                <h2>${this.objetRecipe.name}</h2>
+                <span><img src="assets/icons/clock.svg" alt="" />${this.objetRecipe.time} min</span>
             </div>
             <div class="description">
                 <ul>
-                    ${this.createLi()}
+                    ${this.createLiIngredients()}
                 </ul>
-                <p>${this.objet.description}</p>
+                <p>${this.objetRecipe.description}</p>
             </div>
         </div>`;
         const node = document.querySelector(".sectionRecettes");
-        return article
+        return articleRecipe
     }
-    createLi() {
-        const arrayLi = this.objet.ingredients;
+
+    /* retourne des listes <li> d'ingrédients à partir du tableau d'ingrédients 
+    variable */ 
+    // ingredients = [{ingredient:, quantity:, unit:}, {ingrédient: ...}, {...}
+    createLiIngredients() {    
         let newLi = "";
-        let x = 0;
-        while (x < arrayLi.length) {
-            if (this.objet.ingredients[x]["unit"]) {
-                newLi = newLi + `<li><span>${this.objet.ingredients[x]["ingredient"]}:</span> ${this.objet.ingredients[x]["quantity"]} ${this.objet.ingredients[x]["unit"]}</li>`;
-            } else if (this.objet.ingredients[x]["quantity"]) {
-                newLi = newLi + `<li><span>${this.objet.ingredients[x]["ingredient"]}:</span> ${this.objet.ingredients[x]["quantity"]}</li>`;
-            } else {
-                newLi = newLi + `<li><span>${this.objet.ingredients[x]["ingredient"]}</span></li>`;
-            }
-            x++;
+        /* boucle sur le tableau d'ingrédients et crée <li> avec propriétés quantity et unit si elles existent, retire le ":" si elles n'existent pas */
+        for (let el of this.objetRecipe.ingredients) { 
+                newLi = newLi + `<li><span>${el.ingredient}${(el.ingredient)?":":""}</span> ${el.quantity || ""} ${el.unit || ""}</li>`;
         }
         return newLi
     }
 }
-// carote poisson tahicienne sucre limo coco corrigés: quantite

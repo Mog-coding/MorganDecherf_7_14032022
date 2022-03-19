@@ -1,6 +1,7 @@
 /* imports */
 import RecipeFactory from "../factories/RecipeFactory.js";
 import Recipe from "../model/Recipe.js";
+import RecipeService from "../service/service.js";
 
 
 /* Récupération des données avec fetch */
@@ -8,28 +9,25 @@ fetch("data/recipes.json") // Promise résolue: serveur répond
    .then((response) => {   // Promise résolue: data chargée  
       return response.json();
    })
-   .then((response) => { // Promise résolue: retourne data
-      const { recipes } = response;
+   .then(({ recipes }) => { // Promise résolue: retourne data
       console.log(recipes); // [{..}, {..},] 50 objets
 
-      // Tableau objets vers instances class Recipe 
-      const recipesInst = recipes.map(function (el) {
-         const test = new Recipe(el);
-         return new RecipeFactory(test)
-      })
-      // Création dynamiques recettes
-      recipesInst.forEach(function (el) {
-         const node = document.querySelector(".sectionRecettes");
-         node.appendChild(el.createRecipeCards());
+      /* Retourne tableau d'instances recettes de class Recipe, cree dynamiquement
+      les cartes recettes ds section recette avec méthode createRecipeCards()  */
+      const recipesInstance = recipes.map(function (el) {
+         const recipesInst = new Recipe(el);
+         const recipeFactory = new RecipeFactory(recipesInst);
+         document.querySelector(".sectionRecettes").appendChild(recipeFactory.createRecipeCards());
+         return recipesInst;
       })
 
-      // Fonction de recherche sur propriétés name, ingredients, description 
+
+      // Fonction de recherche recette sur propriétés name, ingredients, description 
       function filter() {
          const arrayData = recipes;
          const arrayFiltered = [];
          const saisie = "CiT";
          const saisieLow = saisie.toLowerCase();
-         console.log(saisieLow);
 
          arrayData.forEach(function (objet) {
             const nameLow = objet.name.toLowerCase();
@@ -38,10 +36,12 @@ fetch("data/recipes.json") // Promise résolue: serveur répond
             if (nameLow.includes(saisieLow)) {
                console.log("name trouvé");
                arrayFiltered.push(objet)
-            } else if (descriptionLow.includes(saisieLow)) {
+            } 
+            else if (descriptionLow.includes(saisieLow)) {
                console.log("description trouvée");
                arrayFiltered.push(objet)
-            } else {
+            } 
+            else {
                objet.ingredients.forEach((obj) => {
                   // obj = {ingre: "kiwi", quantity:, unit:}
                   const ingredientLow = obj.ingredient.toLowerCase();
@@ -57,18 +57,19 @@ fetch("data/recipes.json") // Promise résolue: serveur répond
       filter();
 
 
+
+
+
+
+
+
+
+
       /*   
       const arrayFiltered = arrayData.filter(function(objet){
             return objet.name.includes(saisie)
       })}
       */
-
-
-
-
-
-
-
 
 
    })
