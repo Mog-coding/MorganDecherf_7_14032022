@@ -1,0 +1,22 @@
+{
+  "name": "morgandecherf_7_14032022",
+  "version": "1.0.0",
+  "description": "Projet7: les petits plats",
+  "main": "scripts/pages/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mog-coding/MorganDecherf_7_14032022.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mog-coding/MorganDecherf_7_14032022/issues"
+  },
+  "homepage": "https://github.com/Mog-coding/MorganDecherf_7_14032022#readme",
+  "devDependencies": {
+    "eslint": "^8.11.0"
+  }
+}

@@ -3,7 +3,6 @@ import RecipeFactory from "../factories/RecipeFactory.js";
 import Recipe from "../model/Recipe.js";
 import RecipeService from "../service/service.js";
 
-
 /* Récupération des données avec fetch */
 fetch("data/recipes.json") // Promise résolue: serveur répond
    .then((response) => {   // Promise résolue: data chargée  
@@ -15,8 +14,9 @@ fetch("data/recipes.json") // Promise résolue: serveur répond
       /* Retourne tableau d'instances recettes de class Recipe, cree dynamiquement
       les cartes recettes ds section recette avec méthode createRecipeCards()  */
       const recipesInstance = recipes.map(function (el) {
-         const recipesInst = new Recipe(el);
+         const recipesInst = new Recipe(el); // tableau de 50 instances
          const recipeFactory = new RecipeFactory(recipesInst);
+         console.log(recipeFactory);
          document.querySelector(".sectionRecettes").appendChild(recipeFactory.createRecipeCards());
          return recipesInst;
       })

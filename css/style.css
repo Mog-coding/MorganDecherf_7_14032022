@@ -40,13 +40,13 @@
   justify-content: flex-start;
   flex-wrap: wrap;
 }
-.btnIngredients {
+.btnIngredient, .fltIngredient {
   background-color: #3282f7;
 }
-.btnAppareils {
+.btnAppareil, .fltAppareil {
   background-color: #68d9a4;
 }
-.btnUstensiles {
+.btnUstensile, .fltUstensile {
   background-color: #ed6454;
 }
 
@@ -129,7 +129,12 @@ article {
 }
 
 /********************** articles recettes **********************/
-@media screen and (max-width: 1100px) {
+
+@media screen and (max-width: 1300px) {
+.wrapper {
+  padding: 30px 30px 0px 30px;
+}
+@media screen and (max-width: 1200px) {
   article {
     width: 48%;
     margin-bottom: 30px;
