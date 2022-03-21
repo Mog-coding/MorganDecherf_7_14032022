@@ -2,42 +2,49 @@ import Recipe from "../model/Recipe.js";
 
 export default class RecipeService {
     constructor() {
+        this.recipes = [];
     }
-    rechercheGlobale() {
-        this.recipes.forEach(function (objet) {
-            const nameLow = objet.name.toLowerCase();
-            const descriptionLow = objet.description.toLowerCase();
+    rechercheGlobale(arrayRecipe, saisie) {
+        const saisieLow = saisie.toLowerCase();
+        const arrayFiltered = [];
+        arrayRecipe.forEach(function (instRecipe) {
+            const nameLow = instRecipe.name.toLowerCase();
+            const descriptionLow = instRecipe.description.toLowerCase();
 
             if (nameLow.includes(saisieLow)) {
-                console.log("name trouvé");
-                arrayFiltered.push(objet)
+                arrayFiltered.push(instRecipe)
             }
             else if (descriptionLow.includes(saisieLow)) {
-                console.log("description trouvée");
-                arrayFiltered.push(objet)
+                arrayFiltered.push(instRecipe)
             }
             else {
-                objet.ingredients.forEach((obj) => {
-                    // obj = {ingre: "kiwi", quantity:, unit:}
-                    const ingredientLow = obj.ingredient.toLowerCase();
+                instRecipe.ingredients.forEach((ingredients) => {
+                    // ingredients = {ingre: "kiwi", quantity:, unit:}
+                    const ingredientLow = ingredients.ingredient.toLowerCase();
                     if (ingredientLow.includes(saisieLow)) {
-                        console.log("ingrédient trouvé")
-                        arrayFiltered.push(objet)
+                        arrayFiltered.push(instRecipe)
                     }
                 })
             }
         })
+        return arrayFiltered
     }
 
+    /* Récupération des données avec fetch */
     async fetchData() {
-        fetch("data/recipes.json") // Promise résolue: serveur répond
-            .then((response) => {   // Promise résolue: data chargée  
+        return fetch("data/recipes.json")  // Promise résolue: serveur répond
+            .then((response) => {        // Promise résolue: data chargée  
                 return response.json();
             })
-            .then(({ recipes }) => { // Promise résolue: retourne data
-                this.recipes = recipes.map(function (recipe) {
-                    return new Recipe(recipe);
+            .then(({ recipes }) => {      // Promise résolue: retourne data
+                // console.log(recipes);  [{..}, {..},] 50 instRecipes
+
+                // Retourne tableau d'instances recettes de class Recipe
+                const thisrecipe = recipes.map(function (objRecipe) {
+                    const recipesInst = new Recipe(objRecipe);
+                    return recipesInst;
                 });
+                return thisrecipe  // remplacer thisrecipe par this.recipes
             })
     }
 }
