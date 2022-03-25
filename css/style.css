@@ -38,16 +38,78 @@
 .sectionFiltres {
   display: flex;
   justify-content: flex-start;
-  flex-wrap: wrap;
+  flex-wrap: wrap; 
 }
-.btnIngredient, .fltIngredient {
+.filterIngredient,
+.tagIngredient {
   background-color: #3282f7;
 }
-.btnAppareil, .fltAppareil {
+.filterAppareil,
+.tagAppareil {
   background-color: #68d9a4;
 }
-.btnUstensile, .fltUstensile {
+.filterUstensile,
+.tagUstensile {
   background-color: #ed6454;
+}
+
+/********************** boutons filtres **********************/
+.disappear {
+  display: none;
+}
+.disappear.appear {
+  display: block;
+}
+.unsetFilter {
+  width: unset;
+  height: unset
+}
+.filter {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.filter span {
+  text-align: center;
+}
+.filter img {
+  position: absolute;
+  right: 10px;
+  top: 30px;
+}
+.rotate {
+  transform: rotate(180deg);
+}
+.filter input {
+  width: 90%;
+  height: 70px;
+  background-color: #ed6454;
+  color: white;
+  font-size: 1em;
+  font-weight: bold;
+  border: none;
+  outline: none;
+}
+.filter input::placeholder {
+  color: #E7E7E7;
+}
+/* retire'x'du champ input from Chrome */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration { display: none; }
+
+.filter ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-height: 400px;
+  padding: 0px;
+  margin: 0px;
+}
+.filter ul li {
+  width: 30%;
 }
 
 /********************** articles recettes **********************/
@@ -131,8 +193,9 @@ article {
 /********************** articles recettes **********************/
 
 @media screen and (max-width: 1300px) {
-.wrapper {
-  padding: 30px 30px 0px 30px;
+  .wrapper {
+    padding: 30px 30px 0px 30px;
+  }
 }
 @media screen and (max-width: 1200px) {
   article {

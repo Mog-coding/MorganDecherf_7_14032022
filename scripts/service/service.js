@@ -7,7 +7,7 @@ export default class RecipeService {
     rechercheGlobale(saisie) {
         const saisieLow = saisie.toLowerCase();
         const arrayRecipeFiltered = [];
-        this.recipes.forEach(function (instRecipe) {
+        this.recipes.forEach((instRecipe) => {
             const nameLow = instRecipe.name.toLowerCase();
             const descriptionLow = instRecipe.description.toLowerCase();
 
@@ -39,10 +39,30 @@ export default class RecipeService {
             .then(({ recipes }) => {      // Promise résolue: retourne data
                 // recipes ->  [{..}, {..},] 50 objets recette
                 // Mise à jour propriété class -> 50 instance de class Recipe
-                this.recipes = recipes.map(function (objRecipe) {
+                this.recipes = recipes.map((objRecipe) => {
                     const recipesInst = new Recipe(objRecipe);
                     return recipesInst;
                 });
             })
     }
+
+    ingredientSearch(saisie){
+    const finder = this.recipes.filter((objRecette)=> {
+        let foundRecette = false;
+        // tableau ingredients       objet ingredient(contient)
+        objRecette.ingredients.forEach((objIngredient) => {
+            if (objIngredient.ingredient.includes(saisie)) {
+                foundRecette = true;
+            } 
+        })
+        return foundRecette;
+    });
+    console.log(finder);
+    return finder
+    }
+
+
+
+
+
 }

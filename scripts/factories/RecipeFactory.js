@@ -20,7 +20,6 @@ export default class RecipeFactory {
                 <p>${this.objetRecipe.description}</p>
             </div>
         </div>`;
-        const node = document.querySelector(".sectionRecettes");
         return articleRecipe
     }
 
