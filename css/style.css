@@ -40,8 +40,7 @@
   justify-content: flex-start;
   flex-wrap: wrap; 
 }
-.filterIngredient,
-.tagIngredient {
+.colorIngredient {
   background-color: #3282f7;
 }
 .filterAppareil,
@@ -58,11 +57,10 @@
   display: none;
 }
 .disappear.appear {
-  display: block;
+  display: flex;
 }
 .unsetFilter {
-  width: unset;
-  height: unset
+  width: 50%;
 }
 .filter {
   display: flex;
@@ -83,7 +81,6 @@
 .filter input {
   width: 90%;
   height: 70px;
-  background-color: #ed6454;
   color: white;
   font-size: 1em;
   font-weight: bold;
@@ -100,13 +97,18 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration { display: none; }
 
 .filter ul {
-  display: flex;
-  flex-direction: column;
+  position: absolute;
+  bottom: -390px;
+  left: 0px;
+  flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
-  max-height: 400px;
+  height: 400px;
   padding: 0px;
   margin: 0px;
+  background-color: #3282f7;
+  overflow: scroll;
+  overflow-x: hidden
 }
 .filter ul li {
   width: 30%;
