@@ -12,7 +12,7 @@ async function init() {
    const recipeService = new RecipeService();
 
 
-   /*************
+   /************
    *************    FETCH     *******************
    *************/
 
@@ -20,22 +20,24 @@ async function init() {
    await recipeService.fetchData();
 
 
-   /*************
+   /************
    *************    FILTRES     *******************
    *************/
 
    const inputIngredient = document.querySelector("#searchIngredient");
 
-
-   /* Ajout liste ingrédients dans filtre */
-   createIngredientList(recipeService.getIngredients(null, ));
+   /* Initialisation liste ingrédients dans filtre */
+   createIngredientList(recipeService.getIngredientsList(null));
+   createTags();
 
    /* Listener champ recherche filtre */
    inputIngredient.addEventListener("change", (event) => {
       const saisie = event.target.value;
-      createIngredientList(recipeService.getIngredients(null, saisie));
-
+      createIngredientList(recipeService.getIngredientsList(null, saisie));
+      createTags();
    })
+
+   /* Listener sur liste ingrédients */
 
 
    /************* Menu Dropdown *************/
@@ -43,29 +45,59 @@ async function init() {
    const nodeIconFilter = document.querySelector(".filter img");
    const ingredientUl = document.querySelector("#ingredientList");
 
+   // Click sur menu dropDown -> ouvre / ferme
    inputIngredient.addEventListener("click", (event) => {
       if (!ingredientUl.classList.contains("appear")) {
-         /* Modification <input type="text" -> "search" */
-         ingredientUl.classList.add("appear");
-         ingredientFilter.classList.add("unsetFilter");
-         event.target.setAttribute("type", "search");
-         event.target.setAttribute("type", "search");
-         event.target.removeAttribute("value");
-         event.target.setAttribute("placeholder", "Rechercher un ingredient");
-         nodeIconFilter.classList.add("rotate");
-
+         openDropDown();
       } else {
-         ingredientUl.classList.remove("appear");
-         ingredientFilter.classList.remove("unsetFilter")
-         event.target.setAttribute("type", "button");
-         event.target.removeAttribute("placeholder");
-         event.target.setAttribute("value", "ingredient");
-         nodeIconFilter.classList.remove("rotate");
+         closeDropDown();
       }
    })
 
+   // Fermer/ouvrir menu dropdown:
+   function openDropDown() {
+      /* Modification <input type="text" -> "search" */
+      ingredientUl.classList.add("appear");
+      ingredientFilter.classList.add("unsetFilter");
+      inputIngredient.setAttribute("type", "search");
+      inputIngredient.setAttribute("type", "search");
+      inputIngredient.removeAttribute("value");
+      inputIngredient.setAttribute("placeholder", "Rechercher un ingredient");
+      nodeIconFilter.classList.add("rotate");
+   }
+   function closeDropDown() {
+      ingredientUl.classList.remove("appear");
+      ingredientFilter.classList.remove("unsetFilter")
+      inputIngredient.setAttribute("type", "button");
+      inputIngredient.removeAttribute("placeholder");
+      inputIngredient.setAttribute("value", "ingredient");
+      nodeIconFilter.classList.remove("rotate");
+   }
 
-   /*************
+   /************
+   *************    TAG     *******************
+   *************/
+
+   function createTags() {
+      // Ajout Listener sur chaque ingrédient de la liste
+      const nodeTag = document.querySelector(".sectionTags");
+      const nodesList = document.querySelectorAll(".itemIngredient");
+      nodesList.forEach((el) => {
+         el.addEventListener("click", function () {
+            closeDropDown();
+            const tag = document.createElement("button");
+            tag.innerHTML = `${el.textContent}
+            <img src="assets/icons/croix.svg" alt="" />`;
+            tag.classList.add("btnTag");
+            if(el.classList.contains("itemIngredient")){
+               tag.classList.add("colorIngredient");
+            }
+            nodeTag.appendChild(tag);
+         })
+      })
+   }
+
+   /************
    *************    Recherche globale     *******************
    *************/
 
@@ -84,7 +116,7 @@ async function init() {
 
 
 
-   
+
 
 
 
@@ -101,10 +133,22 @@ function createIngredientList(ingredientsList) {
    // Ajout des nouvelles listes
    ingredientsList.forEach((el) => {
       const list = document.createElement("li");
+      list.classList.add("itemIngredient")
       list.innerHTML = el;
       ingredientUl.appendChild(list);
    })
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

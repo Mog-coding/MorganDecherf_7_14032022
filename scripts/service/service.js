@@ -47,8 +47,8 @@ export default class RecipeService {
     }
 
     // Extrait liste ingrédients du tableau recette complet ou filtré
-    // Filtre2 avec search <input>
-    getIngredients(filteredRecipes, searchIngredient) {
+    // Si search filtre -> 
+    getIngredientsList(filteredRecipes, saisieIngredient) {
 
         // Transformation array d'objet recette -> array de liste d'ingrédients
         // map sur filteredRecipes si existe, sinon sur tableau recettes non modifié
@@ -61,27 +61,11 @@ export default class RecipeService {
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listIngredients = [... new Set(listIngredients)];
         
-        if (searchIngredient) {
-            listIngredients = listIngredients.filter((saisie) => saisie.indexOf(searchIngredient.toLowerCase()) > -1);
+        if (saisieIngredient) {
+            listIngredients = listIngredients.filter((el) => {
+                console.log(el.indexOf(saisieIngredient.toLowerCase()) > -1);
+                return el.indexOf(saisieIngredient.toLowerCase()) > -1});
         }
         return listIngredients
     }
 }
-
-/*
-    getIngredients(filteredRecipes, searchIngredient) {
-        let ingredients = [
-            ...new Set((filteredRecipes || this.recipes).map((recipe) => {
-                return recipe.ingredients.map((ingredient) => ingredient.ingredient.toLowerCase())
-            }).flat())
-        ];
-        if (searchIngredient) {
-            ingredients = ingredients.filter((ingredient) => ingredient.indexOf(searchIngredient.toLowerCase()) > -1);
-        }
-        console.log(ingredients);
-        return ingredients
-    }
-
-
-
-*/
