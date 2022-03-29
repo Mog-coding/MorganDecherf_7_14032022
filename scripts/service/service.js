@@ -37,7 +37,7 @@ export default class RecipeService {
                 return response.json();
             })
             .then(({ recipes }) => {      // Promise résolue: retourne data
-                // recipes ->  [{..}, {..},] 50 objets recette
+                // Recipes ->  [{..}, {..},] 50 objets recette
                 // Mise à jour propriété class -> 50 instance de class Recipe
                 this.recipes = recipes.map((objRecipe) => {
                     const recipesInst = new Recipe(objRecipe);
@@ -47,7 +47,7 @@ export default class RecipeService {
     }
 
     // Extrait liste ingrédients du tableau recette complet ou filtré
-    // Si search filtre -> 
+    // Si recherche filtre -> 
     getIngredientsList(filteredRecipes, saisieIngredient) {
 
         // Transformation array d'objet recette -> array de liste d'ingrédients
@@ -61,9 +61,9 @@ export default class RecipeService {
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listIngredients = [... new Set(listIngredients)];
         
+        // Filtre l'array de string ingrédients en fct saisie
         if (saisieIngredient) {
             listIngredients = listIngredients.filter((el) => {
-                console.log(el.indexOf(saisieIngredient.toLowerCase()) > -1);
                 return el.indexOf(saisieIngredient.toLowerCase()) > -1});
         }
         return listIngredients

@@ -3,6 +3,7 @@ import RecipeService from "../service/service.js";
 import RecipeFactory from "../factories/RecipeFactory.js";
 
 let filteredRecipes = [];
+let selectedTag = "";
 
 /* Récupère tableau recipe via fetch */
 async function init() {
@@ -10,10 +11,10 @@ async function init() {
    let nodeSectionRecette = document.querySelector(".sectionRecettes");
    const nodeSearch = document.querySelector("#globalSearch");
    const recipeService = new RecipeService();
-
+   filteredRecipes = [...recipeService.recipes];
 
    /************
-   *************    FETCH     *******************
+   *************     FETCH     *******************
    *************/
 
    /* récupération data + ajout propriété recipeService: array 50 instances recette */
@@ -21,37 +22,25 @@ async function init() {
 
 
    /************
-   *************    FILTRES     *******************
+   *************     FILTRES     *******************
    *************/
-
-   const inputIngredient = document.querySelector("#searchIngredient");
-
-   /* Initialisation liste ingrédients dans filtre */
-   createIngredientList(recipeService.getIngredientsList(null));
-   createTags();
-
-   /* Listener champ recherche filtre */
-   inputIngredient.addEventListener("change", (event) => {
-      const saisie = event.target.value;
-      createIngredientList(recipeService.getIngredientsList(null, saisie));
-      createTags();
-   })
-
-   /* Listener sur liste ingrédients */
-
 
    /************* Menu Dropdown *************/
    const ingredientFilter = document.querySelector("#ingredientFilter");
-   const nodeIconFilter = document.querySelector(".filter img");
+   const nodeIconFilter = document.querySelector("#ingredientFilter img");
    const ingredientUl = document.querySelector("#ingredientList");
+   const boutonFilter = document.querySelectorAll(".openDropdown");
+   const inputIngredient = document.querySelector("#searchIngredient");
 
    // Click sur menu dropDown -> ouvre / ferme
-   inputIngredient.addEventListener("click", (event) => {
-      if (!ingredientUl.classList.contains("appear")) {
-         openDropDown();
-      } else {
-         closeDropDown();
-      }
+   boutonFilter.forEach((el) => {
+      el.addEventListener("click", () => {
+         if (!ingredientUl.classList.contains("appear")) {
+            openDropDown();
+         } else {
+            closeDropDown();
+         }
+      })
    })
 
    // Fermer/ouvrir menu dropdown:
@@ -74,31 +63,93 @@ async function init() {
       nodeIconFilter.classList.remove("rotate");
    }
 
+   /************* logique filtres *************/
+
+   /* Initialisation liste ingrédients dans filtre */
+   createIngredientList(recipeService.getIngredientsList(null));
+   listenListCreateTags();
+   // createListFiltered();
+
+   /* Saisie champ recherche filtre */
+   inputIngredient.addEventListener("change", (event) => {
+      const saisie = event.target.value;
+      createIngredientList(recipeService.getIngredientsList(null, saisie));
+      listenListCreateTags();
+   })
+
    /************
-   *************    TAG     *******************
+   *************     TAG     *******************
    *************/
 
-   function createTags() {
-      // Ajout Listener sur chaque ingrédient de la liste
+   // listen liste + cree tags
+   function listenListCreateTags() {
       const nodeTag = document.querySelector(".sectionTags");
       const nodesList = document.querySelectorAll(".itemIngredient");
+
+      // Ajout Listener sur chaque ingrédient de la liste
       nodesList.forEach((el) => {
-         el.addEventListener("click", function () {
+         el.addEventListener("click", () => {
+
+            /******* Clic sur liste *******/
             closeDropDown();
+
+            // Export nom du tag
+            selectedTag = el.textContent;
+
+            // Creation du tag
             const tag = document.createElement("button");
             tag.innerHTML = `${el.textContent}
             <img src="assets/icons/croix.svg" alt="" />`;
             tag.classList.add("btnTag");
-            if(el.classList.contains("itemIngredient")){
+            if (el.classList.contains("itemIngredient")) {
                tag.classList.add("colorIngredient");
             }
+            // Filtre tableau recette
             nodeTag.appendChild(tag);
+            filterRecipes(el.textContent);
+            console.log(filteredRecipes);
+
+
+            // Régénération liste
+            // Retrait du tag de la liste
+            let list = recipeService.getIngredientsList(filteredRecipes);
+            list.splice(list.indexOf(selectedTag), 1);
+            // Génère la liste sans le tag
+            createIngredientList(list);
+
+            // Récursivité ;O 
+            listenListCreateTags();
+
+
+            /* Fermeture tag
+            nodeTag.addEventListener("click", (e) => {
+
+               // Supression du tag
+               e.target.remove();
+
+               // Filtre tableau recette
+               console.log(e.target.innerText);
+               createIngredientList(recipeService.getIngredientsList(filteredRecipes));
+            })
+            */
          })
       })
    }
 
+   function filterRecipes(tag) {
+      if (tag) {
+         filteredRecipes = recipeService.recipes.filter((el) => {
+            return el.ingredients.find((el) => {
+               return el.ingredient.toLowerCase() === tag.toLowerCase();
+            })
+         })
+      } else {
+         filteredRecipes = [...recipeService.recipes];
+      }
+   }
+
    /************
-   *************    Recherche globale     *******************
+   *************     Recherche globale     *******************
    *************/
 
    // EventListener sur <input> champ de recherche recette
