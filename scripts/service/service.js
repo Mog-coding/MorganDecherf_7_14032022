@@ -66,6 +66,9 @@ export default class RecipeService {
             listIngredients = listIngredients.filter((el) => {
                 return el.indexOf(saisieIngredient.toLowerCase()) > -1});
         }
-        return listIngredients
+        // Retourne la liste avec maj sur 1er caractère
+        return listIngredients = listIngredients.map((el) => {
+            return el[0].toUpperCase() + el.slice(1);
+        })
     }
 }

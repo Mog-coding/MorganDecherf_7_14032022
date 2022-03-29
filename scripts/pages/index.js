@@ -11,7 +11,6 @@ async function init() {
    let nodeSectionRecette = document.querySelector(".sectionRecettes");
    const nodeSearch = document.querySelector("#globalSearch");
    const recipeService = new RecipeService();
-   filteredRecipes = [...recipeService.recipes];
 
    /************
    *************     FETCH     *******************
@@ -19,7 +18,8 @@ async function init() {
 
    /* récupération data + ajout propriété recipeService: array 50 instances recette */
    await recipeService.fetchData();
-
+   // Initialisation tableau recettes filtrées
+   filteredRecipes = [...recipeService.recipes];
 
    /************
    *************     FILTRES     *******************
@@ -83,7 +83,7 @@ async function init() {
 
    // listen liste + cree tags
    function listenListCreateTags() {
-      const nodeTag = document.querySelector(".sectionTags");
+      const nodeSectionTag = document.querySelector(".sectionTags");
       const nodesList = document.querySelectorAll(".itemIngredient");
 
       // Ajout Listener sur chaque ingrédient de la liste
@@ -104,25 +104,31 @@ async function init() {
             if (el.classList.contains("itemIngredient")) {
                tag.classList.add("colorIngredient");
             }
+            nodeSectionTag.appendChild(tag);
+ 
             // Filtre tableau recette
-            nodeTag.appendChild(tag);
             filterRecipes(el.textContent);
             console.log(filteredRecipes);
 
 
-            // Régénération liste
-            // Retrait du tag de la liste
-            let list = recipeService.getIngredientsList(filteredRecipes);
-            list.splice(list.indexOf(selectedTag), 1);
+            // Régénération liste ingrédients
+            // Extraction tableau string liste des recettes filtrées
+            const list = recipeService.getIngredientsList(filteredRecipes);
+            // Supression du nom des tags de la liste
+            const nodeTags = document.querySelectorAll(".btnTag");
+            nodeTags.forEach(function(el){
+               list.splice(list.indexOf(el.innerText), 1);
+            })
             // Génère la liste sans le tag
             createIngredientList(list);
 
-            // Récursivité ;O 
+
+
+            // Récursivité D;
             listenListCreateTags();
 
-
-            /* Fermeture tag
-            nodeTag.addEventListener("click", (e) => {
+            /*
+                        nodeSectionTag.addEventListener("click", (e) => {
 
                // Supression du tag
                e.target.remove();
@@ -132,20 +138,18 @@ async function init() {
                createIngredientList(recipeService.getIngredientsList(filteredRecipes));
             })
             */
+
+
          })
       })
    }
 
    function filterRecipes(tag) {
-      if (tag) {
-         filteredRecipes = recipeService.recipes.filter((el) => {
+         filteredRecipes = filteredRecipes.filter((el) => {
             return el.ingredients.find((el) => {
                return el.ingredient.toLowerCase() === tag.toLowerCase();
             })
          })
-      } else {
-         filteredRecipes = [...recipeService.recipes];
-      }
    }
 
    /************
