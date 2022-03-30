@@ -47,7 +47,7 @@ export default class RecipeService {
     }
 
     // Extrait liste ingrédients du tableau recette complet ou filtré
-    // Si recherche filtre -> 
+    // Si recherche filtre -> filte ingrédients qui match avec saisie
     getIngredientsList(filteredRecipes, saisieIngredient) {
 
         // Transformation array d'objet recette -> array de liste d'ingrédients
@@ -66,9 +66,17 @@ export default class RecipeService {
             listIngredients = listIngredients.filter((el) => {
                 return el.indexOf(saisieIngredient.toLowerCase()) > -1});
         }
-        // Retourne la liste avec maj sur 1er caractère
-        return listIngredients = listIngredients.map((el) => {
+        
+        // Formatage liste
+        // Ajoute une maj sur 1er caractère
+        listIngredients = listIngredients.map((el) => {
             return el[0].toUpperCase() + el.slice(1);
+        })
+        // Retourne liste classée dans l'ordre alphabétique
+        return listIngredients.sort((a, b) => {
+            if(a > b) return 1;
+            if(a < b) return -1;
+            return 0;
         })
     }
 }
