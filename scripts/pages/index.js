@@ -27,45 +27,7 @@ async function init() {
    *************     FILTRES     *******************
    *************/
 
-   /************* Menu Dropdown *************/
-   const ingredientFilter = document.querySelector("#ingredientFilter");
-   const nodeIconFilter = document.querySelector("#ingredientFilter img");
-   const ingredientUl = document.querySelector("#ingredientList");
-   const boutonFilter = document.querySelectorAll(".openDropdown");
    const inputIngredient = document.querySelector("#searchIngredient");
-
-   // Click sur menu dropDown -> ouvre / ferme
-   boutonFilter.forEach((el) => {
-      el.addEventListener("click", () => {
-         if (!ingredientUl.classList.contains("appear")) {
-            openDropDown();
-         } else {
-            closeDropDown();
-         }
-      })
-   })
-
-   // Fermer/ouvrir menu dropdown:
-   function openDropDown() {
-      /* Modification <input type="text" -> "search" */
-      ingredientUl.classList.add("appear");
-      ingredientFilter.classList.add("unsetFilter");
-      inputIngredient.setAttribute("type", "search");
-      inputIngredient.setAttribute("type", "search");
-      inputIngredient.removeAttribute("value");
-      inputIngredient.setAttribute("placeholder", "Rechercher un ingredient");
-      nodeIconFilter.classList.add("rotate");
-   }
-   function closeDropDown() {
-      ingredientUl.classList.remove("appear");
-      ingredientFilter.classList.remove("unsetFilter")
-      inputIngredient.setAttribute("type", "button");
-      inputIngredient.removeAttribute("placeholder");
-      inputIngredient.setAttribute("value", "ingredient");
-      nodeIconFilter.classList.remove("rotate");
-   }
-
-   /************* logique filtres *************/
 
    /* Initialisation liste ingrédients dans filtre */
    createIngredientList(recipeService.getIngredientsList(null));
@@ -107,7 +69,6 @@ async function init() {
 
             // Filtre tableau recette
             filterRecipes(el.textContent, filteredRecipes);
-            console.log(filteredRecipes);
 
             // Régénération liste ingrédients sans les noms de tag
             createListWithoutTag();
@@ -132,7 +93,6 @@ async function init() {
                if (nodeTags) {
                   nodeTags.forEach((el) => {
                      filterRecipes(el.innerText);
-                     console.log(filteredRecipes);
                   })
                }
                // Régénération liste ingrédients sans les noms de tag
@@ -183,11 +143,8 @@ async function init() {
          nodeSectionRecette.appendChild(recipeFactory.createRecipeCards());
       })
    })
-
 }
 init();
-
-
 
 
 function createIngredientList(ingredientsList) {
@@ -204,15 +161,55 @@ function createIngredientList(ingredientsList) {
 }
 
 
+/************
+*************     Ouverture / fermeture menu dropDown     *******************
+*************/
 
+const ingredientFilter = document.querySelector("#ingredientFilter");
+const nodeIconFilter = document.querySelector("#ingredientFilter img");
+const ingredientUl = document.querySelector("#ingredientList");
+const boutonFilter = document.querySelectorAll(".openDropdown");
+const inputIngredient = document.querySelector("#searchIngredient");
 
+// Click sur menu dropDown -> ouvre / ferme
+boutonFilter.forEach((el) => {
+   el.addEventListener("click", () => {
+      if (!ingredientUl.classList.contains("appear")) {
+         openDropDown();
+      } else {
+         closeDropDown();
+      }
+   })
+})
 
+// Fermer/ouvrir menu dropdown:
+function openDropDown() {
+   /* Modification <input type="text" -> "search" */
+   ingredientUl.classList.add("appear");
+   ingredientFilter.classList.add("widthFilter");
+   inputIngredient.setAttribute("type", "search");
+   inputIngredient.setAttribute("type", "search");
+   inputIngredient.removeAttribute("value");
+   inputIngredient.setAttribute("placeholder", "Rechercher un ingredient");
+   nodeIconFilter.classList.add("rotate");
+}
+function closeDropDown() {
+   ingredientUl.classList.remove("appear");
+   ingredientFilter.classList.remove("widthFilter")
+   inputIngredient.setAttribute("type", "button");
+   inputIngredient.removeAttribute("placeholder");
+   inputIngredient.setAttribute("value", "ingredient");
+   nodeIconFilter.classList.remove("rotate");
+}
 
+/********  Fermeture menu dropDown si ouvert et clic en dehors ********/
 
-
-
-
-
-
-
+window.addEventListener("click", (event) => {
+   /* Si menu dropDown ouvert (widthFilter), si clic en dehors du menu ("ingredientList"), et si clic en dehors bouton filtre (searchIngredient) */
+   if ((!(event.target.id === "ingredientList")
+      && !(event.target.id === "searchIngredient"))
+      && ingredientFilter.classList.contains("widthFilter")) {
+      closeDropDown();
+   }
+})
 

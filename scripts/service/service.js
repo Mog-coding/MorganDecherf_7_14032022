@@ -53,20 +53,22 @@ export default class RecipeService {
         // Transformation array d'objet recette -> array de liste d'ingrédients
         // map sur filteredRecipes si existe, sinon sur tableau recettes non modifié
         let listIngredients = (filteredRecipes || this.recipes).map((objRecette) => {
-             return objRecette.ingredients.map((objIngredient) => {
-                 return objIngredient.ingredient.toLowerCase()});
+            return objRecette.ingredients.map((objIngredient) => {
+                return objIngredient.ingredient.toLowerCase()
             });
+        });
         // Array d'array liste -> array string liste, supprime 1 imbrication    
         listIngredients = listIngredients.flat();
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listIngredients = [... new Set(listIngredients)];
-        
+
         // Filtre l'array de string ingrédients en fct saisie
         if (saisieIngredient) {
             listIngredients = listIngredients.filter((el) => {
-                return el.indexOf(saisieIngredient.toLowerCase()) > -1});
+                return el.indexOf(saisieIngredient.toLowerCase()) > -1
+            });
         }
-        
+
         // Formatage liste
         // Ajoute une maj sur 1er caractère
         listIngredients = listIngredients.map((el) => {
@@ -74,8 +76,8 @@ export default class RecipeService {
         })
         // Retourne liste classée dans l'ordre alphabétique
         return listIngredients.sort((a, b) => {
-            if(a > b) return 1;
-            if(a < b) return -1;
+            if (a > b) return 1;
+            if (a < b) return -1;
             return 0;
         })
     }
