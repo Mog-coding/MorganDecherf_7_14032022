@@ -29,17 +29,22 @@ async function init() {
 
    const inputIngredient = document.querySelector("#searchIngredient");
 
-   /* Initialisation liste ingrédients dans filtre */
-   createIngredientList(recipeService.getIngredientsList(null));
+   /* Initialisation listes dans filtre */
+   // Liste ingrédients  createFilterList(nodeList, filterList)
+   createFilterList("#ingredientList", recipeService.getIngredientsList(null));
+   // Liste appareils 
+   createFilterList("#appareilList", recipeService.getAppareilsList(null));
+
    listenListCreateTags();
+
+
 
    /* Saisie champ recherche filtre */
    inputIngredient.addEventListener("change", (event) => {
       const saisie = event.target.value;
-      createIngredientList(recipeService.getIngredientsList(null, saisie));
+      createFilterList("#ingredientList", recipeService.getIngredientsList(null, saisie));
       listenListCreateTags();
    })
-
 
    /************
    *************     TAG     *******************
@@ -48,30 +53,40 @@ async function init() {
    // listen liste + cree tags
    function listenListCreateTags() {
       const nodeSectionTag = document.querySelector(".sectionTags");
-      const nodesList = document.querySelectorAll(".itemIngredient");
+      const nodesList = document.querySelectorAll(".itemLiFilter");
 
+      // MV listener sur TOUTES les listes <li> pour chaque appel
       // Ajout Listener sur chaque ingrédient de la liste
       nodesList.forEach((el) => {
-         el.addEventListener("click", () => {
+         el.addEventListener("click", (event) => {
+            const tagName = event.target.textContent;
 
             /******* Clic sur liste *******/
-            closeDropDown();
+            // Depuis <li> cliquée vers <input> de la <li>
+            closeDropDown(event.target.parentElement.previousElementSibling);
 
             // Creation du tag
             const tag = document.createElement("button");
-            tag.innerHTML = `${el.textContent}
+            tag.innerHTML = `${tagName}
             <img src="assets/icons/croix.svg" alt="" />`;
             tag.classList.add("btnTag");
-            if (el.classList.contains("itemIngredient")) {
+
+            if (event.target.parentElement.id === "ingredientList") {
                tag.classList.add("colorIngredient");
+            } else if (event.target.parentElement.id === "appareilList") {
+               tag.classList.add("colorAppareil")
             }
+
             nodeSectionTag.appendChild(tag);
 
-            // Filtre tableau recette
-            filterRecipes(el.textContent, filteredRecipes);
+            console.log(filteredRecipes);
+            // Filtre tableau recette avec nom tag
+            filterRecipes(event.target);
+            console.log(filteredRecipes);
 
             // Régénération liste ingrédients sans les noms de tag
-            createListWithoutTag();
+            // 1 FOIS POUR CHAQUE LISTE
+            createListWithoutTagName();
 
             // Récursivité D;
             listenListCreateTags();
@@ -96,7 +111,7 @@ async function init() {
                   })
                }
                // Régénération liste ingrédients sans les noms de tag
-               createListWithoutTag();
+               createListWithoutTagName();
 
                // Récursivité D;
                listenListCreateTags();
@@ -106,15 +121,21 @@ async function init() {
       })
    }
 
-   function filterRecipes(tag) {
-      filteredRecipes = filteredRecipes.filter((el) => {
-         return el.ingredients.find((el) => {
-            return el.ingredient.toLowerCase() === tag.toLowerCase();
+   function filterRecipes(nodeLi) {
+      if (nodeLi.parentElement.id === "ingredientList") {
+         filteredRecipes = filteredRecipes.filter((el) => {
+            return el.ingredients.find((el) => {
+               return el.ingredient.toLowerCase() === nodeLi.textContent.toLowerCase();
+            })
          })
-      })
+      } else if (nodeLi.parentElement.id === "appareilList") {
+         filteredRecipes = filteredRecipes.filter((el) => {
+            return el.appliance.toLowerCase() === nodeLi.textContent.toLowerCase();
+         })
+      }
    }
 
-   function createListWithoutTag() {
+   function createListWithoutTagName() {
       const nodeTags = document.querySelectorAll(".btnTag");
       // Extraction tableau string liste des recettes filtrées
       const list = recipeService.getIngredientsList(filteredRecipes);
@@ -123,7 +144,7 @@ async function init() {
          list.splice(list.indexOf(el.innerText), 1);
       })
       // Génère la liste sans le tag
-      createIngredientList(list);
+      createFilterList("#ingredientList", list);
    }
 
 
@@ -147,16 +168,16 @@ async function init() {
 init();
 
 
-function createIngredientList(ingredientsList) {
-   const ingredientUl = document.querySelector("#ingredientList");
+function createFilterList(nodeFilter, filterList) { 
+   const nodeFilterUl = document.querySelector(nodeFilter);
    // Supression des listes existantes
-   ingredientUl.innerHTML = null;
+   nodeFilterUl.innerHTML = null;
    // Ajout des nouvelles listes
-   ingredientsList.forEach((el) => {
+   filterList.forEach((el) => {
       const list = document.createElement("li");
-      list.classList.add("itemIngredient")
+      list.classList.add("itemLiFilter");
       list.innerHTML = el;
-      ingredientUl.appendChild(list);
+      nodeFilterUl.appendChild(list);
    })
 }
 
@@ -165,51 +186,71 @@ function createIngredientList(ingredientsList) {
 *************     Ouverture / fermeture menu dropDown     *******************
 *************/
 
-const ingredientFilter = document.querySelector("#ingredientFilter");
-const nodeIconFilter = document.querySelector("#ingredientFilter img");
-const ingredientUl = document.querySelector("#ingredientList");
+/*** Click sur menu dropDown -> ouvre / ferme ***/
 const boutonFilter = document.querySelectorAll(".openDropdown");
-const inputIngredient = document.querySelector("#searchIngredient");
 
-// Click sur menu dropDown -> ouvre / ferme
+// Listener sur les 3 filtres: 1er clic: ouvre dropDown, 2eme clic: ferme 
 boutonFilter.forEach((el) => {
-   el.addEventListener("click", () => {
-      if (!ingredientUl.classList.contains("appear")) {
-         openDropDown();
+   el.addEventListener("click", (el) => {
+      if (!el.target.nextElementSibling.classList.contains("appear")) {
+         // el.target = <input> du filtre cliqué
+         openDropDown(el.target);
       } else {
-         closeDropDown();
+         closeDropDown(el.target);
       }
    })
 })
 
 // Fermer/ouvrir menu dropdown:
-function openDropDown() {
-   /* Modification <input type="text" -> "search" */
-   ingredientUl.classList.add("appear");
-   ingredientFilter.classList.add("widthFilter");
-   inputIngredient.setAttribute("type", "search");
-   inputIngredient.setAttribute("type", "search");
-   inputIngredient.removeAttribute("value");
-   inputIngredient.setAttribute("placeholder", "Rechercher un ingredient");
-   nodeIconFilter.classList.add("rotate");
+function openDropDown(filterInputNode) {
+   // Appararition dropDown avec width 54%, rotation icone 
+   filterInputNode.nextElementSibling.classList.add("appear");
+   filterInputNode.parentElement.classList.add("widthFilter");
+   filterInputNode.previousElementSibling.classList.add("rotate");
+
+   // Modification <input type="text" vers "search" 
+   filterInputNode.setAttribute("type", "search");
+   filterInputNode.removeAttribute("value");
+   // Changement nom placeholder fonction du filtre cliqué
+   if (filterInputNode.id === "searchIngredient") {
+      filterInputNode.setAttribute("placeholder", "Rechercher un ingredient");
+   } else if (filterInputNode.id === "searchAppareil") {
+      filterInputNode.setAttribute("placeholder", "Rechercher un appareil");
+   }
 }
-function closeDropDown() {
-   ingredientUl.classList.remove("appear");
-   ingredientFilter.classList.remove("widthFilter")
-   inputIngredient.setAttribute("type", "button");
-   inputIngredient.removeAttribute("placeholder");
-   inputIngredient.setAttribute("value", "ingredient");
-   nodeIconFilter.classList.remove("rotate");
+function closeDropDown(filterInputNode) {
+   // Disparition dropDown, width réduite, rotation icone 
+   filterInputNode.nextElementSibling.classList.remove("appear");
+   filterInputNode.parentElement.classList.remove("widthFilter")
+   filterInputNode.previousElementSibling.classList.remove("rotate");
+
+   // Modification <input type="search" vers "text" 
+   filterInputNode.setAttribute("type", "button");
+   filterInputNode.removeAttribute("placeholder");
+   // Modification valeur <input> en fonction filtre cliqué
+   if (filterInputNode.id === "searchIngredient") {
+      filterInputNode.setAttribute("value", "Ingredients")
+   } else if (filterInputNode.id === "searchAppareil") {
+      filterInputNode.setAttribute("value", "Appareils")
+   }
 }
 
 /********  Fermeture menu dropDown si ouvert et clic en dehors ********/
+
+const ingredientSearch = document.querySelector("#searchIngredient");
+const appareilSearch = document.querySelector("#searchAppareil");
 
 window.addEventListener("click", (event) => {
    /* Si menu dropDown ouvert (widthFilter), si clic en dehors du menu ("ingredientList"), et si clic en dehors bouton filtre (searchIngredient) */
    if ((!(event.target.id === "ingredientList")
       && !(event.target.id === "searchIngredient"))
-      && ingredientFilter.classList.contains("widthFilter")) {
-      closeDropDown();
+      && ingredientSearch.parentElement.classList.contains("widthFilter")) {
+      closeDropDown(ingredientSearch);
+   }
+   if ((!(event.target.id === "appareilList")
+      && !(event.target.id === "searchAppareil"))
+      && appareilSearch.parentElement.classList.contains("widthFilter")) {
+      closeDropDown(appareilSearch);
    }
 })
 

@@ -75,13 +75,16 @@
   position: absolute;
   right: 10px;
   top: 30px;
+  pointer-events: none;
 }
 .rotate {
   transform: rotate(180deg);
 }
 .btnFilter input {
-  width: 90%;
+  width: 100%;
   height: 70px;
+  padding: 0 18px 0 16px;
+  border-radius: 6px;
   color: white;
   font-size: 1em;
   font-weight: bold;
@@ -110,7 +113,6 @@ input[type="search"]::-webkit-search-results-decoration {
   max-height: 400px;
   padding: 0px;
   margin: 0px;
-  background-color: #3282f7;
   overflow: scroll;
   overflow-x: hidden;
   overflow-y: auto;
@@ -122,6 +124,16 @@ input[type="search"]::-webkit-search-results-decoration {
   padding-bottom: 10px;
   font-weight: normal;
 }
+.btnFilter #ingredientList {
+  background-color: #3282f7;
+}
+.btnFilter #appareilList {
+  background-color: #68d9a4;
+}
+.btnFilter #ustensilList {
+  background-color: #ed6454;
+}
+
 
 /********************** articles recettes **********************/
 .sectionRecettes {

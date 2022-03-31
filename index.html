@@ -32,17 +32,25 @@
             </section>
 
             <section class="sectionFiltres">
-                <!-- <div id="" class="filterIngredient btnFilter">
-                    <span>Ingrédients</span>
-                    <img src="assets/icons/chevron_bas.svg" alt="" />
-                </div>
-                <div id="" class="filterAppareil btnFilter">
-                    <span>Appareils</span>
-                    <img src="assets/icons/chevron_bas.svg" alt="" />
-                </div> -->
                 <div id="ingredientFilter" class="btnFilter colorIngredient">
-                    <input id="searchIngredient" type="button" value="ingredient"
+                    <img src="assets/icons/chevron_bas.svg" class="openDropdown" alt="" />
+                    <input id="searchIngredient" type="button" value="Ingredients"
                         class="colorIngredient openDropdown" />
+                    <ul id="ingredientList" class="disappear">
+                        <!--<li class="itemIngredient">Beurre</li>-->
+                    </ul>
+                </div>
+                <div id="appareilFilter" class="btnFilter colorAppareil">
+                    <img src="assets/icons/chevron_bas.svg" class="openDropdown" alt="" />
+                    <input id="searchAppareil" type="button" value="Appareils"
+                        class="colorAppareil openDropdown" />
+                    <ul id="appareilList" class="disappear">
+                        <!--<li class="itemIngredient">Beurre</li>-->
+                    </ul>
+                </div>
+                <div id="ingredientFilter" class="btnFilter colorUstensile">
+                    <input id="searchIngredient" type="button" value="Ustensiles"
+                        class="colorUstensile openDropdown" />
                     <img src="assets/icons/chevron_bas.svg" class="openDropdown" alt="" />
                     <ul id="ingredientList" class="disappear">
                         <!--<li class="itemIngredient">Beurre</li>-->

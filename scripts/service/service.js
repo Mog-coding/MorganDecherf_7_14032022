@@ -59,6 +59,7 @@ export default class RecipeService {
         });
         // Array d'array liste -> array string liste, supprime 1 imbrication    
         listIngredients = listIngredients.flat();
+        
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listIngredients = [... new Set(listIngredients)];
 
@@ -70,15 +71,38 @@ export default class RecipeService {
         }
 
         // Formatage liste
+        return this.formateList(listIngredients)
+    }
+
+    getAppareilsList(filteredRecipes, saisieIngredient) {
+
+         // Transformation array d'objet recette -> array de liste d'appareils
+        let listAppareils = this.recipes.map((el) => {
+            return el.appliance.toLowerCase()
+        })
+
+        // Formatage liste
+        // Obj Set -> supprime doublons, spread [... set] conversion set -> array
+        listAppareils = [... new Set(listAppareils)];
+        
+        // si saisie
+        
+        // Formatage liste
+        return this.formateList(listAppareils)
+    }
+
+    // Formatage liste
+    formateList(list){
         // Ajoute une maj sur 1er caractère
-        listIngredients = listIngredients.map((el) => {
-            return el[0].toUpperCase() + el.slice(1);
+        list = list.map((el) => {
+            return el[0].toUpperCase() + el.slice(1)
         })
         // Retourne liste classée dans l'ordre alphabétique
-        return listIngredients.sort((a, b) => {
+        return list.sort((a, b) => {
             if (a > b) return 1;
             if (a < b) return -1;
-            return 0;
+            return 0
         })
     }
+
 }
