@@ -55,7 +55,7 @@ async function init() {
       const nodeSectionTag = document.querySelector(".sectionTags");
       const nodesList = document.querySelectorAll(".itemLiFilter");
 
-      // MV listener sur TOUTES les listes <li> pour chaque appel
+      // A modifier sur TOUTES les listes <li> pour chaque appel
       // Ajout Listener sur chaque ingrédient de la liste
       nodesList.forEach((el) => {
          el.addEventListener("click", (event) => {
@@ -84,11 +84,10 @@ async function init() {
             filterRecipes(event.target);
             console.log(filteredRecipes);
 
-            // Régénération liste ingrédients sans les noms de tag
-            // 1 FOIS POUR CHAQUE LISTE
+            // Régénération de toutes les listes sans les noms de tag
             createListWithoutTagName();
 
-            // Récursivité D;
+            // Récursivité 
             listenListCreateTags();
 
 
@@ -107,13 +106,13 @@ async function init() {
                // Si tag, filtre du tableau avec chaque tag 
                if (nodeTags) {
                   nodeTags.forEach((el) => {
-                     filterRecipes(el.innerText);
+                     filterRecipesWithTag(el.innerText);
                   })
                }
                // Régénération liste ingrédients sans les noms de tag
                createListWithoutTagName();
 
-               // Récursivité D;
+               // Récursivité 
                listenListCreateTags();
 
             })
@@ -134,17 +133,34 @@ async function init() {
          })
       }
    }
+   // A modifier
+   function filterRecipesWithTag(tag) {
+      filteredRecipes = filteredRecipes.filter((el) => {
+         return el.ingredients.find((el) => {
+            return el.ingredient.toLowerCase() === tag.toLowerCase();
+         })
+      })
+   }
 
    function createListWithoutTagName() {
       const nodeTags = document.querySelectorAll(".btnTag");
+
       // Extraction tableau string liste des recettes filtrées
-      const list = recipeService.getIngredientsList(filteredRecipes);
+      const listIngredients = recipeService.getIngredientsList(filteredRecipes);
+      const listAppareils = recipeService.getAppareilsList(filteredRecipes);
+      
+      // A Modifier
       // Supression du nom des tags de la liste
       nodeTags.forEach(function (el) {
-         list.splice(list.indexOf(el.innerText), 1);
+         listIngredients.splice(listIngredients.indexOf(el.innerText), 1);
       })
+      nodeTags.forEach(function (el) {
+         listAppareils.splice(listAppareils.indexOf(el.innerText), 1);
+      })
+
       // Génère la liste sans le tag
-      createFilterList("#ingredientList", list);
+      createFilterList("#ingredientList", listIngredients);
+      createFilterList("#appareilList", listAppareils);
    }
 
 

@@ -77,7 +77,7 @@ export default class RecipeService {
     getAppareilsList(filteredRecipes, saisieIngredient) {
 
          // Transformation array d'objet recette -> array de liste d'appareils
-        let listAppareils = this.recipes.map((el) => {
+        let listAppareils = (filteredRecipes || this.recipes).map((el) => {
             return el.appliance.toLowerCase()
         })
 
