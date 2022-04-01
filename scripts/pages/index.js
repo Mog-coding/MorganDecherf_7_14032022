@@ -3,7 +3,10 @@ import RecipeService from "../service/service.js";
 import RecipeFactory from "../factories/RecipeFactory.js";
 
 let filteredRecipes = [];
-
+let selectedTags = {
+   ingredientList: [],
+   appareilList: []
+};
 
 /* Récupère tableau recipe via fetch */
 async function init() {
@@ -35,7 +38,7 @@ async function init() {
    // Liste appareils 
    createFilterList("#appareilList", recipeService.getAppareilsList(null));
 
-   listenListCreateTags();
+   //listenListCreateTags();
 
 
 
@@ -43,7 +46,7 @@ async function init() {
    inputIngredient.addEventListener("change", (event) => {
       const saisie = event.target.value;
       createFilterList("#ingredientList", recipeService.getIngredientsList(null, saisie));
-      listenListCreateTags();
+      // listenListCreateTags();
    })
 
    /************
@@ -76,6 +79,8 @@ async function init() {
             } else if (event.target.parentElement.id === "appareilList") {
                tag.classList.add("colorAppareil")
             }
+
+            selectedTags[event.target.parentElement.id].push(tagName);
 
             nodeSectionTag.appendChild(tag);
 
@@ -148,7 +153,7 @@ async function init() {
       // Extraction tableau string liste des recettes filtrées
       const listIngredients = recipeService.getIngredientsList(filteredRecipes);
       const listAppareils = recipeService.getAppareilsList(filteredRecipes);
-      
+
       // A Modifier
       // Supression du nom des tags de la liste
       nodeTags.forEach(function (el) {
@@ -184,7 +189,7 @@ async function init() {
 init();
 
 
-function createFilterList(nodeFilter, filterList) { 
+function createFilterList(nodeFilter, filterList) {
    const nodeFilterUl = document.querySelector(nodeFilter);
    // Supression des listes existantes
    nodeFilterUl.innerHTML = null;
@@ -194,7 +199,54 @@ function createFilterList(nodeFilter, filterList) {
       list.classList.add("itemLiFilter");
       list.innerHTML = el;
       nodeFilterUl.appendChild(list);
+      
+      list.addEventListener("click", (event) => onSelectTag(event));
    })
+}
+
+function onSelectTag(event) {
+   const nodeSectionTag = document.querySelector(".sectionTags");
+   const tagName = event.target.textContent;
+
+   /******* Clic sur liste *******/
+   // Depuis <li> cliquée vers <input> de la <li>
+   closeDropDown(event.target.parentElement.previousElementSibling);
+
+   // Creation du tag
+   const tag = document.createElement("button");
+   tag.innerHTML = `${tagName}
+            <img src="assets/icons/croix.svg" alt="" />`;
+   tag.classList.add("btnTag");
+
+   if (event.target.parentElement.id === "ingredientList") {
+      tag.classList.add("colorIngredient");
+   } else if (event.target.parentElement.id === "appareilList") {
+      tag.classList.add("colorAppareil")
+   }
+
+   selectedTags[event.target.parentElement.id].push(tagName);
+
+   nodeSectionTag.appendChild(tag);
+
+   console.log(filteredRecipes);
+   // Filtre tableau recette avec nom tag
+   filterRecipes(event.target);
+   console.log(filteredRecipes);
+   console.log(selectedTags)
+
+}
+function filterRecipes(nodeLi) {
+   if (nodeLi.parentElement.id === "ingredientList") {
+      filteredRecipes = filteredRecipes.filter((el) => {
+         return el.ingredients.find((el) => {
+            return el.ingredient.toLowerCase() === nodeLi.textContent.toLowerCase();
+         })
+      })
+   } else if (nodeLi.parentElement.id === "appareilList") {
+      filteredRecipes = filteredRecipes.filter((el) => {
+         return el.appliance.toLowerCase() === nodeLi.textContent.toLowerCase();
+      })
+   }
 }
 
 
@@ -211,6 +263,7 @@ boutonFilter.forEach((el) => {
       if (!el.target.nextElementSibling.classList.contains("appear")) {
          // el.target = <input> du filtre cliqué
          openDropDown(el.target);
+         // recipe.service get.ingredient(null)
       } else {
          closeDropDown(el.target);
       }
