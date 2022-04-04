@@ -59,7 +59,7 @@ export default class RecipeService {
         });
         // Array d'array liste -> array string liste, supprime 1 imbrication    
         listIngredients = listIngredients.flat();
-        
+
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listIngredients = [... new Set(listIngredients)];
 
@@ -75,19 +75,17 @@ export default class RecipeService {
         listIngredients = this.formateList(listIngredients);
 
         // Supression des noms tags de la liste via liste d'exclusion
-        if(exclusionList){
-        exclusionList.forEach((el) => {
-            listIngredients.splice(listIngredients.indexOf(el), 1);
-        })
+        if (exclusionList) {
+            exclusionList.forEach((el) => {
+                listIngredients.splice(listIngredients.indexOf(el), 1);
+            })
         }
-
-
         return listIngredients
     }
 
     getAppareilsList(filteredRecipes, exclusionList, saisieIngredient) {
 
-         // Transformation array d'objet recette -> array de liste d'appareils
+        // Transformation array d'objet recette -> array de liste d'appareils
         let listAppareils = (filteredRecipes || this.recipes).map((el) => {
             return el.appliance.toLowerCase()
         })
@@ -95,25 +93,54 @@ export default class RecipeService {
         // Formatage liste
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listAppareils = [... new Set(listAppareils)];
-        
+
         // si saisie
-        
+
         // Formatage liste
         listAppareils = this.formateList(listAppareils)
 
         // Liste exclusion tags
-        if(exclusionList){
+        if (exclusionList) {
             exclusionList.forEach((el) => {
                 listAppareils.splice(listAppareils.indexOf(el), 1);
             })
-            }
+        }
 
         return listAppareils
+    }
 
+    getUstensilList(filteredRecipes, exclusionList, saisieIngredient) {
+
+        // Transformation array d'objet recette -> array de liste d'appareils
+        let listUstensils = (filteredRecipes || this.recipes).map((el) => {
+            return el.ustensils.map((el) => {
+                return el.toLowerCase();
+            })
+        })
+
+        // Formatage liste
+        listUstensils = listUstensils.flat();
+
+        // Obj Set -> supprime doublons, spread [... set] conversion set -> array
+        listUstensils = [... new Set(listUstensils)];
+
+        // si saisie
+
+        // Formatage liste
+        listUstensils = this.formateList(listUstensils);
+
+        // Liste exclusion tags
+        if (exclusionList) {
+            exclusionList.forEach((el) => {
+                listUstensils.splice(listUstensils.indexOf(el), 1);
+            })
+        }
+
+        return listUstensils
     }
 
     // Formatage liste
-    formateList(list){
+    formateList(list) {
         // Ajoute une maj sur 1er caractère
         list = list.map((el) => {
             return el[0].toUpperCase() + el.slice(1)

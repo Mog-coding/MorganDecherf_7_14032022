@@ -6,7 +6,7 @@ let filteredRecipes = [];
 let selectedTags = {
    ingredientList: [],
    appareilList: [],
-   ustensileList: []
+   ustensilList: []
 };
 //AM
 let originalRecipes = [];
@@ -55,6 +55,9 @@ async function init() {
             else if (event.target.id === "searchAppareil") {
                createFilterList("#appareilList", recipeService.getAppareilsList(filteredRecipes, selectedTags.appareilList));
             }
+            else if (event.target.id === "searchUstensil") {
+               createFilterList("#ustensilList", recipeService.getUstensilList(filteredRecipes, selectedTags.ustensilList));
+            }
 
             // Ouvre le filtre cliqué, el.target = <input> cliqué
             openDropDown(event.target);
@@ -78,7 +81,7 @@ async function init() {
    *************/
 
 
-
+   
    /************
    *************     Recherche globale     *******************
    *************/
@@ -123,6 +126,7 @@ function createFilterList(nodeFilter, filterList) {
    }
 }
 
+
 function onSelectTag(event) {
    const nodeSectionTag = document.querySelector(".sectionTags");
    const tagName = event.target.textContent;
@@ -143,21 +147,57 @@ function onSelectTag(event) {
    } else if (nodeContListUl.id === "appareilList") {
       tagNode.classList.add("colorAppareil");
       tagNode.setAttribute("data-id", "appareilList")
+   } else if (nodeContListUl.id === "ustensilList") {
+      tagNode.classList.add("colorUstensil");
+      tagNode.setAttribute("data-id", "ustensilList")
    }
    // Génération Tag
    nodeSectionTag.appendChild(tagNode);
-   // AJOUT LISTENER SUR TAG AVEC FONCTION NOMMEEE
+   // Ajout listener sur tag crée avec suppression tag si clic
    tagNode.addEventListener("click", (event) => onRemoveTag(event));
 
    // Object.key <=> array 
    selectedTags[nodeContListUl.id].push(tagName);
 
-   console.log(filteredRecipes);
    // Filtre tableau recette avec nom tag
    filterRecipes(event.target.parentElement.id, event.target.textContent);
    console.log(filteredRecipes);
 }
 
+// Supprime un tag, filtre le tableau filteredRecipes avec tags restants
+function onRemoveTag(event) {
+
+// Supression nom tag de la liste du filtre
+// idTag -> tag ingredient ou appareil
+const idTag = event.target.dataset.id;
+// Liste des tags cliqués par type
+const arrayTag = selectedTags[idTag];
+// Récupération index du nom du tag 
+const indexTag = arrayTag.indexOf(event.target.textContent);
+// Suppression nom Tag
+arrayTag.splice(indexTag, 1);
+
+// Supression tag
+event.target.remove();
+
+// Remise état origine tableau recette
+filteredRecipes = [...originalRecipes];
+
+// Filtre filteredRecipes avec tags non supprimés:
+if (selectedTags["ingredientList"].length > 0)
+   selectedTags["ingredientList"].forEach((el) => {
+      filterRecipes("ingredientList", el)
+   })
+if (selectedTags["appareilList"].length > 0)
+   selectedTags["appareilList"].forEach((el) => {
+      filterRecipes("appareilList", el)
+   })
+if (selectedTags["ustensilList"].length > 0)
+   selectedTags["ustensilList"].forEach((el) => {
+      filterRecipes("ustensilList", el)
+   })
+console.log(filteredRecipes);
+}
 
 // AM A METTRE DS METHODE
 // Filtre du tableau de recettes
@@ -172,48 +212,13 @@ function filterRecipes(filterType, tagName) {
       filteredRecipes = filteredRecipes.filter((el) => {
          return el.appliance.toLowerCase() === tagName.toLowerCase();
       })
-   } else if (filterType === "ustensileList") {
+   } else if (filterType === "ustensilList") {
       filteredRecipes = filteredRecipes.filter((el) => {
          return el.ustensils.find((el) => {
             return el.toLowerCase() === tagName.toLowerCase();
          })
       })
    }
-}
-
-
-// Supprime un tag, filtre le tableau filteredRecipes avec tags restants
-function onRemoveTag(event) {
-
-   // Supression nom tag de la liste du filtre
-   // idTag -> tag ingredient ou appareil
-   const idTag = event.target.dataset.id;
-   // Liste des tags cliqués par type
-   const arrayTag = selectedTags[idTag];
-   // Récupération index du nom du tag 
-   const indexTag = arrayTag.indexOf(event.target.textContent);
-   // Suppression nom Tag
-   arrayTag.splice(indexTag, 1);
-
-   // Supression tag
-   event.target.remove();
-
-   // Remise état origine tableau recette
-   filteredRecipes = [...originalRecipes];
-
-   // Filtre filteredRecipes avec tags non supprimés:
-   if (selectedTags["ingredientList"].length > 0)
-      selectedTags["ingredientList"].forEach((el) => {
-         filterRecipes("ingredientList", el)
-      })
-   if (selectedTags["appareilList"].length > 0)
-      selectedTags["appareilList"].forEach((el) => {
-         filterRecipes("appareilList", el)
-      })
-   if (selectedTags["ustensileList"].length > 0)
-      selectedTags["ustensileList"].forEach((el) => {
-         filterRecipes("ustensileList", el)
-      })
 }
 
 
@@ -236,6 +241,8 @@ function openDropDown(filterInputNode) {
       filterInputNode.setAttribute("placeholder", "Rechercher un ingredient");
    } else if (filterInputNode.id === "searchAppareil") {
       filterInputNode.setAttribute("placeholder", "Rechercher un appareil");
+   } else if (filterInputNode.id === "searchUstensil") {
+      filterInputNode.setAttribute("placeholder", "Rechercher un ustensile");
    }
 }
 function closeDropDown(filterInputNode) {
@@ -252,6 +259,8 @@ function closeDropDown(filterInputNode) {
       filterInputNode.setAttribute("value", "Ingredients")
    } else if (filterInputNode.id === "searchAppareil") {
       filterInputNode.setAttribute("value", "Appareils")
+   }  else if (filterInputNode.id === "searchUstensil") {
+      filterInputNode.setAttribute("value", "Ustensiles")
    }
 }
 
@@ -259,6 +268,7 @@ function closeDropDown(filterInputNode) {
 
 const ingredientSearch = document.querySelector("#searchIngredient");
 const appareilSearch = document.querySelector("#searchAppareil");
+const ustensilSearch = document.querySelector("#searchUstensil");
 
 window.addEventListener("click", (event) => {
    /* Si menu dropDown ouvert (widthFilter), si clic en dehors du menu ("ingredientList"), et si clic en dehors bouton filtre (searchIngredient) */
@@ -271,5 +281,10 @@ window.addEventListener("click", (event) => {
       && !(event.target.id === "searchAppareil"))
       && appareilSearch.parentElement.classList.contains("widthFilter")) {
       closeDropDown(appareilSearch);
+   }
+   if ((!(event.target.id === "ustensilList")
+      && !(event.target.id === "searchUstensil"))
+      && ustensilSearch.parentElement.classList.contains("widthFilter")) {
+      closeDropDown(ustensilSearch);
    }
 })
