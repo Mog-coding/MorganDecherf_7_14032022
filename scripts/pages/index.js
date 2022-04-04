@@ -5,8 +5,12 @@ import RecipeFactory from "../factories/RecipeFactory.js";
 let filteredRecipes = [];
 let selectedTags = {
    ingredientList: [],
-   appareilList: []
+   appareilList: [],
+   ustensileList: []
 };
+//AM
+let originalRecipes = [];
+
 
 /* Récupère tableau recipe via fetch */
 async function init() {
@@ -22,9 +26,12 @@ async function init() {
 
    /* récupération data + ajout propriété recipeService: array 50 instances recette */
    await recipeService.fetchData();
+
    // Initialisation tableau recettes filtrées
    filteredRecipes = [...recipeService.recipes];
 
+   // AM
+   originalRecipes = [...recipeService.recipes];
 
    /************
    *************     FILTRES     *******************
@@ -36,32 +43,27 @@ async function init() {
    /*** Click sur menu dropDown -> ouvre / ferme ***/
    const boutonFilter = document.querySelectorAll(".openDropdown");
 
-   // Listener sur les 3 filtres: 1er clic: ouvre dropDown, 2eme clic: ferme 
+   /* Listener sur les 3 boutons filtres: 1er clic: ouvre dropDown, 2eme clic: ferme */
    boutonFilter.forEach((el) => {
       el.addEventListener("click", (event) => {
+         // Si <input> filtre cliqué contient class appear
          if (!event.target.nextElementSibling.classList.contains("appear")) {
+            /* Crée liste ingrédients en fonction du tableau recette filtré et du tag */
             if (event.target.id === "searchIngredient") {
-               createFilterList("#ingredientList", recipeService.getIngredientsList(filteredRecipes));
+               createFilterList("#ingredientList", recipeService.getIngredientsList(filteredRecipes, selectedTags.ingredientList));
             }
             else if (event.target.id === "searchAppareil") {
-               createFilterList("#appareilList", recipeService.getAppareilsList(filteredRecipes));
+               createFilterList("#appareilList", recipeService.getAppareilsList(filteredRecipes, selectedTags.appareilList));
             }
 
-            // el.target = <input> du filtre cliqué
+            // Ouvre le filtre cliqué, el.target = <input> cliqué
             openDropDown(event.target);
 
-            // recipe.service get.ingredient(null)
          } else {
             closeDropDown(event.target);
          }
       })
    })
-
-
-
-
-
-
 
 
    /* Saisie champ recherche filtre */
@@ -98,21 +100,27 @@ init();
 
 
 
-
-
 function createFilterList(nodeFilter, filterList) {
    const nodeFilterUl = document.querySelector(nodeFilter);
+
    // Supression des listes existantes
    nodeFilterUl.innerHTML = null;
-   // Ajout des nouvelles listes
-   filterList.forEach((el) => {
-      const list = document.createElement("li");
-      list.classList.add("itemLiFilter");
-      list.innerHTML = el;
-      nodeFilterUl.appendChild(list);
-      // addEventListener sur chaque liste créee
-      list.addEventListener("click", (event) => onSelectTag(event));
-   })
+
+   // Si filterList vide
+   if (filterList.length === 0) {
+      nodeFilterUl.innerHTML = `Aucun filtre disponible`;
+
+   } else {
+      // Ajout des nouvelles listes
+      filterList.forEach((el) => {
+         const list = document.createElement("li");
+         list.classList.add("itemLiFilter");
+         list.innerHTML = el;
+         nodeFilterUl.appendChild(list);
+         // addEventListener sur chaque liste créee
+         list.addEventListener("click", (event) => onSelectTag(event));
+      })
+   }
 }
 
 function onSelectTag(event) {
@@ -124,93 +132,94 @@ function onSelectTag(event) {
    // Depuis <li> cliquée vers <input> de la <li>
    closeDropDown(nodeContListUl.previousElementSibling);
 
-   // Création du tag
+   /*** Création du tag ***/
    const tagNode = document.createElement("button");
-   tagNode.innerHTML = `${tagName}
-            <img src="assets/icons/croix.svg" alt="" />`;
-            tagNode.classList.add("btnTag");
-
-
+   tagNode.innerHTML = `${tagName}<img src="assets/icons/croix.svg" alt="" />`;
+   tagNode.classList.add("btnTag");
+   // Ajout data type de tag + couleur
    if (nodeContListUl.id === "ingredientList") {
       tagNode.classList.add("colorIngredient");
+      tagNode.setAttribute("data-id", "ingredientList")
    } else if (nodeContListUl.id === "appareilList") {
-      tagNode.classList.add("colorAppareil")
+      tagNode.classList.add("colorAppareil");
+      tagNode.setAttribute("data-id", "appareilList")
    }
-
-   // object.key <=> array 
-   selectedTags[nodeContListUl.id].push(tagName);
-
-   // génération Tag
+   // Génération Tag
    nodeSectionTag.appendChild(tagNode);
+   // AJOUT LISTENER SUR TAG AVEC FONCTION NOMMEEE
+   tagNode.addEventListener("click", (event) => onRemoveTag(event));
+
+   // Object.key <=> array 
+   selectedTags[nodeContListUl.id].push(tagName);
 
    console.log(filteredRecipes);
    // Filtre tableau recette avec nom tag
-   filterRecipes(event.target);
+   filterRecipes(event.target.parentElement.id, event.target.textContent);
    console.log(filteredRecipes);
-   console.log(selectedTags)
-
 }
 
 
-
-// A METTRE DS METHODE
-function filterRecipes(nodeLi) {
-   if (nodeLi.parentElement.id === "ingredientList") {
-      filteredRecipes = filteredRecipes.filter((el) => {
-         return el.ingredients.find((el) => {
-            return el.ingredient.toLowerCase() === nodeLi.textContent.toLowerCase();
+// AM A METTRE DS METHODE
+// Filtre du tableau de recettes
+function filterRecipes(filterType, tagName) {
+   if (filterType === "ingredientList") {
+      filteredRecipes = filteredRecipes.filter((objRecipe) => {
+         return objRecipe.ingredients.find((el) => {
+            return el.ingredient.toLowerCase() === tagName.toLowerCase();
          })
       })
-   } else if (nodeLi.parentElement.id === "appareilList") {
+   } else if (filterType === "appareilList") {
       filteredRecipes = filteredRecipes.filter((el) => {
-         return el.appliance.toLowerCase() === nodeLi.textContent.toLowerCase();
+         return el.appliance.toLowerCase() === tagName.toLowerCase();
+      })
+   } else if (filterType === "ustensileList") {
+      filteredRecipes = filteredRecipes.filter((el) => {
+         return el.ustensils.find((el) => {
+            return el.toLowerCase() === tagName.toLowerCase();
+         })
       })
    }
 }
 
 
+// Supprime un tag, filtre le tableau filteredRecipes avec tags restants
+function onRemoveTag(event) {
 
+   // Supression nom tag de la liste du filtre
+   // idTag -> tag ingredient ou appareil
+   const idTag = event.target.dataset.id;
+   // Liste des tags cliqués par type
+   const arrayTag = selectedTags[idTag];
+   // Récupération index du nom du tag 
+   const indexTag = arrayTag.indexOf(event.target.textContent);
+   // Suppression nom Tag
+   arrayTag.splice(indexTag, 1);
 
+   // Supression tag
+   event.target.remove();
 
+   // Remise état origine tableau recette
+   filteredRecipes = [...originalRecipes];
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   // Filtre filteredRecipes avec tags non supprimés:
+   if (selectedTags["ingredientList"].length > 0)
+      selectedTags["ingredientList"].forEach((el) => {
+         filterRecipes("ingredientList", el)
+      })
+   if (selectedTags["appareilList"].length > 0)
+      selectedTags["appareilList"].forEach((el) => {
+         filterRecipes("appareilList", el)
+      })
+   if (selectedTags["ustensileList"].length > 0)
+      selectedTags["ustensileList"].forEach((el) => {
+         filterRecipes("ustensileList", el)
+      })
+}
 
 
 /************
 *************     Ouverture / fermeture menu dropDown     *******************
 *************/
-
-
 
 // Fermer/ouvrir menu dropdown:
 function openDropDown(filterInputNode) {
@@ -264,45 +273,3 @@ window.addEventListener("click", (event) => {
       closeDropDown(appareilSearch);
    }
 })
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-function createListWithoutTagName() {
-   const nodeTags = document.querySelectorAll(".btnTag");
-
-   // Extraction tableau string liste des recettes filtrées
-   const listIngredients = recipeService.getIngredientsList(filteredRecipes);
-   const listAppareils = recipeService.getAppareilsList(filteredRecipes);
-
-   // A Modifier
-   // Supression du nom des tags de la liste
-   nodeTags.forEach(function (el) {
-      listIngredients.splice(listIngredients.indexOf(el.innerText), 1);
-   })
-   nodeTags.forEach(function (el) {
-      listAppareils.splice(listAppareils.indexOf(el.innerText), 1);
-   })
-
-   // Génère la liste sans le tag
-   createFilterList("#ingredientList", listIngredients);
-   createFilterList("#appareilList", listAppareils);
-}
-function filterRecipesWithTag(tag) {
-   filteredRecipes = filteredRecipes.filter((el) => {
-      return el.ingredients.find((el) => {
-         return el.ingredient.toLowerCase() === tag.toLowerCase();
-      })
-   })
-}
-*/

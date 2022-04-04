@@ -48,7 +48,7 @@ export default class RecipeService {
 
     // Extrait liste ingrédients du tableau recette complet ou filtré
     // Si recherche filtre -> filte ingrédients qui match avec saisie
-    getIngredientsList(filteredRecipes, saisieIngredient) {
+    getIngredientsList(filteredRecipes, exclusionList, saisieIngredient) {
 
         // Transformation array d'objet recette -> array de liste d'ingrédients
         // map sur filteredRecipes si existe, sinon sur tableau recettes non modifié
@@ -63,18 +63,29 @@ export default class RecipeService {
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listIngredients = [... new Set(listIngredients)];
 
-        // Filtre l'array de string ingrédients en fct saisie
+        /* Filtre l'array de string ingrédients en fct saisie
         if (saisieIngredient) {
             listIngredients = listIngredients.filter((el) => {
                 return el.indexOf(saisieIngredient.toLowerCase()) > -1
             });
         }
+        */
 
         // Formatage liste
-        return this.formateList(listIngredients)
+        listIngredients = this.formateList(listIngredients);
+
+        // Supression des noms tags de la liste via liste d'exclusion
+        if(exclusionList){
+        exclusionList.forEach((el) => {
+            listIngredients.splice(listIngredients.indexOf(el), 1);
+        })
+        }
+
+
+        return listIngredients
     }
 
-    getAppareilsList(filteredRecipes, saisieIngredient) {
+    getAppareilsList(filteredRecipes, exclusionList, saisieIngredient) {
 
          // Transformation array d'objet recette -> array de liste d'appareils
         let listAppareils = (filteredRecipes || this.recipes).map((el) => {
@@ -88,7 +99,17 @@ export default class RecipeService {
         // si saisie
         
         // Formatage liste
-        return this.formateList(listAppareils)
+        listAppareils = this.formateList(listAppareils)
+
+        // Liste exclusion tags
+        if(exclusionList){
+            exclusionList.forEach((el) => {
+                listAppareils.splice(listAppareils.indexOf(el), 1);
+            })
+            }
+
+        return listAppareils
+
     }
 
     // Formatage liste
@@ -104,5 +125,10 @@ export default class RecipeService {
             return 0
         })
     }
+
+
+
+
+
 
 }
