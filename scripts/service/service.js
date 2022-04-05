@@ -3,31 +3,7 @@ import Recipe from "../model/Recipe.js";
 export default class RecipeService {
     constructor() {
         this.recipes = [];
-    }
-    rechercheGlobale(saisie) {
-        const saisieLow = saisie.toLowerCase();
-        const arrayRecipeFiltered = [];
-        this.recipes.forEach((instRecipe) => {
-            const nameLow = instRecipe.name.toLowerCase();
-            const descriptionLow = instRecipe.description.toLowerCase();
-
-            if (nameLow.includes(saisieLow)) {
-                arrayRecipeFiltered.push(instRecipe)
-            }
-            else if (descriptionLow.includes(saisieLow)) {
-                arrayRecipeFiltered.push(instRecipe)
-            }
-            else {
-                instRecipe.ingredients.forEach((ingredients) => {
-                    // ingredients = {ingre: "kiwi", quantity:, unit:}
-                    const ingredientLow = ingredients.ingredient.toLowerCase();
-                    if (ingredientLow.includes(saisieLow)) {
-                        arrayRecipeFiltered.push(instRecipe)
-                    }
-                })
-            }
-        })
-        return arrayRecipeFiltered
+        this.filteredRecipes = []; // HERE
     }
 
     /* Récupération data fetch: tableau recette -> tableau instance recette  */
@@ -153,7 +129,73 @@ export default class RecipeService {
         })
     }
 
+    // Filtre du tableau de recettes
+    filterRecipes(filterType, tagName, filteredRecipes) {
+        if (filterType === "ingredientList") {
+            filteredRecipes = filteredRecipes.filter((objRecipe) => {
+                return objRecipe.ingredients.find((el) => {
+                    return el.ingredient.toLowerCase() === tagName.toLowerCase();
+                })
+            })
+        } else if (filterType === "appareilList") {
+            filteredRecipes = filteredRecipes.filter((el) => {
+                return el.appliance.toLowerCase() === tagName.toLowerCase();
+            })
+        } else if (filterType === "ustensilList") {
+            filteredRecipes = filteredRecipes.filter((el) => {
+                return el.ustensils.find((el) => {
+                    return el.toLowerCase() === tagName.toLowerCase();
+                })
+            })
+        }
+        return filteredRecipes;
+    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    rechercheGlobale(saisie) {
+        const saisieLow = saisie.toLowerCase();
+        const arrayRecipeFiltered = [];
+        this.recipes.forEach((instRecipe) => {
+            const nameLow = instRecipe.name.toLowerCase();
+            const descriptionLow = instRecipe.description.toLowerCase();
+
+            if (nameLow.includes(saisieLow)) {
+                arrayRecipeFiltered.push(instRecipe)
+            }
+            else if (descriptionLow.includes(saisieLow)) {
+                arrayRecipeFiltered.push(instRecipe)
+            }
+            else {
+                instRecipe.ingredients.forEach((ingredients) => {
+                    // ingredients = {ingre: "kiwi", quantity:, unit:}
+                    const ingredientLow = ingredients.ingredient.toLowerCase();
+                    if (ingredientLow.includes(saisieLow)) {
+                        arrayRecipeFiltered.push(instRecipe)
+                    }
+                })
+            }
+        })
+        return arrayRecipeFiltered
+    }
 
 
 

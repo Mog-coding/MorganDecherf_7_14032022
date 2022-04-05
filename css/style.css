@@ -133,7 +133,9 @@ input[type="search"]::-webkit-search-results-decoration {
 .btnFilter #ustensilList {
   background-color: #ed6454;
 }
-
+.noFilter {
+  font-weight: normal;
+}
 
 /********************** articles recettes **********************/
 .sectionRecettes {
