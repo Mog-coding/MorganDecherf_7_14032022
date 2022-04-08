@@ -15,14 +15,21 @@ let selectedTags = {
 //AM
 let originalRecipes = [];
 
+let nodeSectionRecette = document.querySelector(".sectionRecettes");
+const nodeSearch = document.querySelector("#globalSearch");
+const recipeService = new RecipeService();
+
+const inputIngredient = document.querySelector("#searchIngredient");
+
+
+/*** Click sur menu dropDown -> ouvre / ferme ***/
+const boutonFilter = document.querySelectorAll(".openDropdown");
+
+
+
 
 /* Récupère tableau recipe via fetch */
 async function init() {
-
-   let nodeSectionRecette = document.querySelector(".sectionRecettes");
-   const nodeSearch = document.querySelector("#globalSearch");
-   const recipeService = new RecipeService();
-
 
    /************
    *************     FETCH     *******************
@@ -35,7 +42,7 @@ async function init() {
    filteredRecipes = [...recipeService.recipes];
 
    // Initialisation affichage des recettes
-   recipesDisplay(filteredRecipes); // AM si pas tag = affiche 50
+   recipesDisplay(filteredRecipes);
 
    // AM
    originalRecipes = [...recipeService.recipes];
@@ -44,12 +51,7 @@ async function init() {
    *************     FILTRES     *******************
    *************/
 
-   const inputIngredient = document.querySelector("#searchIngredient");
-
-
-   /*** Click sur menu dropDown -> ouvre / ferme ***/
-   const boutonFilter = document.querySelectorAll(".openDropdown");
-
+  
    /* Listener sur les 3 boutons filtres: 1er clic: ouvre dropDown, 2eme clic: ferme */
    boutonFilter.forEach((el) => {
       el.addEventListener("click", (event) => {
@@ -80,10 +82,10 @@ async function init() {
    inputIngredient.addEventListener("change", (event) => {
       const saisie = event.target.value;
       createFilterList("#ingredientList", recipeService.getIngredientsList(null, saisie));
-      // listenListCreateTags();
+
    })
 
-   // AM ajout init
+   // 
    function createFilterList(nodeFilter, filterList) {
       const nodeFilterUl = document.querySelector(nodeFilter);
 
@@ -238,8 +240,6 @@ async function init() {
             // Reset tableau recette
             filteredRecipes = [...originalRecipes];
 
-            // AM SI TAG appel onremoveTag( )
-
             // Suppression des recettes affichées
             nodeSectionRecette.innerHTML = null;
 
@@ -254,7 +254,9 @@ async function init() {
             recipesDisplay(filteredRecipes)
          }
 
-      } else {
+      } 
+    /*
+      else {
 
          // Si saisie < 3 lettre = pas de saisie
          inputSearch = "";
@@ -271,7 +273,7 @@ async function init() {
             filteredRecipes = [...originalRecipes];
 
          }
-      }
+      }*/
    })
 }
 init();
