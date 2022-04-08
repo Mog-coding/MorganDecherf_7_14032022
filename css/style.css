@@ -18,7 +18,7 @@
   border: none;
 }
 .search input::placeholder {
-  color: #e7e7e7;
+  color: #ADADAD; /*#e7e7e7*/
   font-size: 1.35em;
 }
 .search img {
@@ -101,7 +101,6 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
   display: none;
 }
-
 .btnFilter ul {
   position: absolute;
   top: 66px;
@@ -111,7 +110,7 @@ input[type="search"]::-webkit-search-results-decoration {
   flex-wrap: wrap;
   width: 100%;
   max-height: 400px;
-  padding: 0px;
+  padding: 0px 0px 10px 0px;
   margin: 0px;
   overflow: scroll;
   overflow-x: hidden;
@@ -135,6 +134,16 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 .noFilter {
   font-weight: normal;
+  padding: 0 0 17px 17px; 
+}
+.itemLiFilter{
+ transform: scale(1);
+}
+.itemLiFilter:hover {
+  cursor: pointer;
+  transform: scale(1.09) translateX(6px);
+  transition: transform 0.1s linear;
+  
 }
 
 /********************** articles recettes **********************/

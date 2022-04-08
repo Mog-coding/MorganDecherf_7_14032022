@@ -4,6 +4,8 @@ import RecipeFactory from "../factories/RecipeFactory.js";
 
 let filteredRecipes = [];
 
+let inputSearch = "";
+
 let selectedTags = {
    ingredientList: [],
    appareilList: [],
@@ -33,7 +35,7 @@ async function init() {
    filteredRecipes = [...recipeService.recipes];
 
    // Initialisation affichage des recettes
-   recipesDisplay();
+   recipesDisplay(filteredRecipes); // AM si pas tag = affiche 50
 
    // AM
    originalRecipes = [...recipeService.recipes];
@@ -109,12 +111,13 @@ async function init() {
    *************     TAG     *******************
    *************/
 
+   /********* Ajout tag *********/
    function onSelectTag(event) {
       const nodeSectionTag = document.querySelector(".sectionTags");
       const tagName = event.target.textContent;
       const nodeContListUl = event.target.parentElement;
 
-      /******* Clic sur liste *******/
+      /****** Clic sur liste ******/
       // Depuis <li> cliquée vers <input> de la <li>
       closeDropDown(nodeContListUl.previousElementSibling);
 
@@ -145,10 +148,11 @@ async function init() {
       filteredRecipes = recipeService.filterRecipes(event.target.parentElement.id, event.target.textContent, filteredRecipes);
 
       // Affichage recettes filtrées
-      recipesDisplay();
+      recipesDisplay(filteredRecipes);
       console.log(filteredRecipes);
    }
 
+   /********* Suppression tag *********/
    // Supprime un tag, filtre le tableau filteredRecipes avec tags restants
    function onRemoveTag(event) {
 
@@ -182,26 +186,32 @@ async function init() {
             filteredRecipes = recipeService.filterRecipes("ustensilList", el, filteredRecipes)
          })
 
-      // Affichage recette filtrées
-      recipesDisplay();
-      console.log(filteredRecipes);
+      // Si saisie valide dans globalSearch: filtrer filteredRecipes   
+      if (inputSearch) {
+         filteredRecipes = recipeService.rechercheGlobale(inputSearch, filteredRecipes);
+      }
 
+      // Affichage recette filtrées
+      recipesDisplay(filteredRecipes);
+      console.log(filteredRecipes);
    }
+
 
    /************
    *************     Affichage des recettes     *******************
    *************/
 
-   function recipesDisplay() {
+   function recipesDisplay(arrayRecipe) {
 
       // Supression des recettes préexistantes
       nodeSectionRecette.innerHTML = null;
 
-      // Affichage du html des nouvelles recettes
-      filteredRecipes.forEach((instRecipe) => {
+      // Affichage html des recettes filtrées par recherche globale (et Tag)
+      arrayRecipe.forEach((instRecipe) => {
          const recipeFactory = new RecipeFactory(instRecipe);
          nodeSectionRecette.appendChild(recipeFactory.createRecipeCards());
       })
+
    }
 
 
@@ -211,11 +221,57 @@ async function init() {
 
    // EventListener sur <input> champ de recherche recette
    nodeSearch.addEventListener("input", (event) => {
-      /* Méthode rechercheGlobale filtre tableau instance recette en fonction saisie input */
-      filteredRecipes = recipeService.rechercheGlobale(event.target.value);
-      
-      recipesDisplay()
-      
+
+      // si au moins 3 lettres saisie -> recherche
+      if (event.target.value.length > 2) {
+
+         // Extraction valeur saisie
+         inputSearch = event.target.value;
+         console.log(inputSearch);
+
+         /* Modifie tableau filteredRecipes fonction saisie input */
+         filteredRecipes = recipeService.rechercheGlobale(event.target.value, filteredRecipes);
+
+         // Si saisie inconnue
+         if (filteredRecipes.length === 0) {
+
+            // Reset tableau recette
+            filteredRecipes = [...originalRecipes];
+
+            // AM SI TAG appel onremoveTag( )
+
+            // Suppression des recettes affichées
+            nodeSectionRecette.innerHTML = null;
+
+            // Affichage aucune recette trouvée
+            const errorMessage = document.createElement("span");
+            errorMessage.textContent = "Aucune recette ne correspond à votre critère... vous pouvez chercher « tarte aux pommes », « poisson », etc.";
+            nodeSectionRecette.appendChild(errorMessage);
+
+         } else {
+
+            // Si saisie valide -> affichage recettes
+            recipesDisplay(filteredRecipes)
+         }
+
+      } else {
+
+         // Si saisie < 3 lettre = pas de saisie
+         inputSearch = "";
+
+         // Si pas de tag sélectionné
+         if (selectedTags["ingredientList"].length === 0
+            && selectedTags["appareilList"].length === 0
+            && selectedTags["ustensilList"].length === 0) {
+            console.log('pas de tag');
+
+            // Affichage de toutes les recettes
+            recipesDisplay(originalRecipes);
+
+            filteredRecipes = [...originalRecipes];
+
+         }
+      }
    })
 }
 init();

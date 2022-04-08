@@ -3,16 +3,15 @@ import Recipe from "../model/Recipe.js";
 export default class RecipeService {
     constructor() {
         this.recipes = [];
-        this.filteredRecipes = []; // HERE
     }
 
     /* Récupération data fetch: tableau recette -> tableau instance recette  */
     async fetchData() {
         return fetch("data/recipes.json")  // Promise résolue: serveur répond
-            .then((response) => {        // Promise résolue: data chargée  
+            .then((response) => {          // Promise résolue: data chargée  
                 return response.json();
             })
-            .then(({ recipes }) => {      // Promise résolue: retourne data
+            .then(({ recipes }) => {       // Promise résolue: retourne data
                 // Recipes ->  [{..}, {..},] 50 objets recette
                 // Mise à jour propriété class -> 50 instance de class Recipe
                 this.recipes = recipes.map((objRecipe) => {
@@ -22,7 +21,7 @@ export default class RecipeService {
             })
     }
 
-    // Extrait liste ingrédients du tableau recette complet ou filtré
+    // Return liste ingrédients du tableau recette
     // Si recherche filtre -> filte ingrédients qui match avec saisie
     getIngredientsList(filteredRecipes, exclusionList, saisieIngredient) {
 
@@ -59,6 +58,7 @@ export default class RecipeService {
         return listIngredients
     }
 
+    // Return liste appareils du tableau recette
     getAppareilsList(filteredRecipes, exclusionList, saisieIngredient) {
 
         // Transformation array d'objet recette -> array de liste d'appareils
@@ -85,6 +85,7 @@ export default class RecipeService {
         return listAppareils
     }
 
+    // Return liste ustensiles du tableau recette
     getUstensilList(filteredRecipes, exclusionList, saisieIngredient) {
 
         // Transformation array d'objet recette -> array de liste d'appareils
@@ -129,7 +130,8 @@ export default class RecipeService {
         })
     }
 
-    // Filtre du tableau de recettes
+
+    // Filtre tableau de recettes fonction tag
     filterRecipes(filterType, tagName, filteredRecipes) {
         if (filterType === "ingredientList") {
             filteredRecipes = filteredRecipes.filter((objRecipe) => {
@@ -152,29 +154,14 @@ export default class RecipeService {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    rechercheGlobale(saisie) {
-        const saisieLow = saisie.toLowerCase();
+    // Filtre tableau recette fonction saisie recherche globale
+    rechercheGlobale(saisie, filteredRecipes) {
         const arrayRecipeFiltered = [];
-        this.recipes.forEach((instRecipe) => {
+        const saisieLow = saisie.toLowerCase();
+
+        console.log(filteredRecipes);
+
+        filteredRecipes.forEach((instRecipe) => {
             const nameLow = instRecipe.name.toLowerCase();
             const descriptionLow = instRecipe.description.toLowerCase();
 
@@ -186,8 +173,8 @@ export default class RecipeService {
             }
             else {
                 instRecipe.ingredients.forEach((ingredients) => {
-                    // ingredients = {ingre: "kiwi", quantity:, unit:}
                     const ingredientLow = ingredients.ingredient.toLowerCase();
+                    // ingredients = {ingre: "kiwi", quantity:, unit:}
                     if (ingredientLow.includes(saisieLow)) {
                         arrayRecipeFiltered.push(instRecipe)
                     }
