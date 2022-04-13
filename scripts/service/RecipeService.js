@@ -23,7 +23,7 @@ export default class RecipeService {
 
     // Return liste ingrédients du tableau recette
     // Si recherche filtre -> filte ingrédients qui match avec saisie
-    getIngredientsList(filteredRecipes, exclusionList, saisieIngredient) {
+    getIngredientsList(filteredRecipes, exclusionList, saisie) {
 
         // Transformation array d'objet recette -> array de liste d'ingrédients
         // map sur filteredRecipes si existe, sinon sur tableau recettes non modifié
@@ -38,39 +38,47 @@ export default class RecipeService {
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listIngredients = [... new Set(listIngredients)];
 
-        /* Filtre l'array de string ingrédients en fct saisie
-        if (saisieIngredient) {
-            listIngredients = listIngredients.filter((el) => {
-                return el.indexOf(saisieIngredient.toLowerCase()) > -1
-            });
+        console.log(saisie);
+        console.log(listIngredients);
+        // Si saisie: filtrer liste fonction saisie
+        if (saisie) {
+            listIngredients = this.filterListByCapture(listIngredients, saisie)
         }
-        */
+        console.log(listIngredients);
 
         // Formatage liste
         listIngredients = this.formateList(listIngredients);
 
+        console.log(exclusionList);
         // Supression des noms tags de la liste via liste d'exclusion
         if (exclusionList) {
             exclusionList.forEach((el) => {
-                listIngredients.splice(listIngredients.indexOf(el), 1);
+                // Si l'élément existe, le retirer de la liste
+                if (listIngredients.indexOf(el) !== -1) {
+                    listIngredients.splice(listIngredients.indexOf(el), 1);
+                }
             })
         }
+        console.log(listIngredients);
+
         return listIngredients
     }
 
     // Return liste appareils du tableau recette
-    getAppareilsList(filteredRecipes, exclusionList, saisieIngredient) {
+    getAppareilsList(filteredRecipes, exclusionList, saisie) {
 
         // Transformation array d'objet recette -> array de liste d'appareils
         let listAppareils = (filteredRecipes || this.recipes).map((el) => {
             return el.appliance.toLowerCase()
         })
 
-        // Formatage liste
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listAppareils = [... new Set(listAppareils)];
 
-        // si saisie
+        // Si saisie: filtrer liste fonction saisie
+        if (saisie) {
+            listAppareils = this.filterListByCapture(listAppareils, saisie)
+        }
 
         // Formatage liste
         listAppareils = this.formateList(listAppareils)
@@ -78,7 +86,10 @@ export default class RecipeService {
         // Liste exclusion tags
         if (exclusionList) {
             exclusionList.forEach((el) => {
-                listAppareils.splice(listAppareils.indexOf(el), 1);
+                // Si l'élément existe, le retirer de la liste
+                if (listAppareils.indexOf(el) !== -1) {
+                    listAppareils.splice(listAppareils.indexOf(el), 1);
+                }
             })
         }
 
@@ -86,7 +97,7 @@ export default class RecipeService {
     }
 
     // Return liste ustensiles du tableau recette
-    getUstensilList(filteredRecipes, exclusionList, saisieIngredient) {
+    getUstensilList(filteredRecipes, exclusionList, saisie) {
 
         // Transformation array d'objet recette -> array de liste d'appareils
         let listUstensils = (filteredRecipes || this.recipes).map((el) => {
@@ -95,13 +106,16 @@ export default class RecipeService {
             })
         })
 
-        // Formatage liste
+        // Supprime 1 imbrication  
         listUstensils = listUstensils.flat();
 
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listUstensils = [... new Set(listUstensils)];
 
-        // si saisie
+        // Si saisie: filtrer liste fonction saisie
+        if (saisie) {
+            listUstensils = this.filterListByCapture(listUstensils, saisie)
+        }
 
         // Formatage liste
         listUstensils = this.formateList(listUstensils);
@@ -109,7 +123,10 @@ export default class RecipeService {
         // Liste exclusion tags
         if (exclusionList) {
             exclusionList.forEach((el) => {
-                listUstensils.splice(listUstensils.indexOf(el), 1);
+                // Si l'élément existe, le retirer de la liste
+                if (listUstensils.indexOf(el) !== -1) {
+                    listUstensils.splice(listUstensils.indexOf(el), 1);
+                }
             })
         }
 
@@ -130,9 +147,16 @@ export default class RecipeService {
         })
     }
 
+    // Trie la liste en fonction de la saisie dans filtre
+    filterListByCapture(listIngredients, saisieIngredient) {
+        // Filtre l'array de string ingrédients en fct saisie
+        return listIngredients = listIngredients.filter((el) => {
+            return el.indexOf(saisieIngredient.toLowerCase()) > -1
+        });
+    }
 
     // Filtre tableau de recettes fonction tag
-    filterRecipes(filterType, tagName, filteredRecipes) {
+    filterByTag(filterType, tagName, filteredRecipes) {
         if (filterType === "ingredientList") {
             filteredRecipes = filteredRecipes.filter((objRecipe) => {
                 return objRecipe.ingredients.find((el) => {
@@ -183,8 +207,6 @@ export default class RecipeService {
         })
         return arrayRecipeFiltered
     }
-
-
 
 
 }

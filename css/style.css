@@ -41,7 +41,6 @@
 .sectionFiltres {
   display: flex;
   justify-content: flex-start;
-  flex-wrap: wrap;
 }
 .colorIngredient {
   background-color: #3282f7;
@@ -83,7 +82,8 @@
 .btnFilter input {
   width: 100%;
   height: 70px;
-  padding: 0 18px 0 16px;
+  padding: 0 60px 0 17px;
+
   border-radius: 6px;
   color: white;
   font-size: 1em;
@@ -211,13 +211,14 @@ article {
   font-weight: bold;
 }
 .description p {
-  height: 106px;
+  height: 102px;
   width: 50%;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: "Roboto", sans-serif;
   font-size: 0.78em;
   margin: 0;
+  line-height: 14.5px;
   /* line clamp: ellipsis sur multilignes (6 et 91) */
   display: -webkit-box;
   -webkit-line-clamp: 7;
@@ -236,6 +237,18 @@ article {
     width: 48%;
     margin-bottom: 30px;
   }
+}
+@media screen and (max-width: 1000px) {
+  .sectionFiltres {
+    flex-direction: column;
+  }
+  .btnFilter {
+    width: 100%;
+    height: unset;
+  }
+  .btnFilter ul {
+    position: static;
+}
 }
 @media screen and (max-width: 790px) {
   article {
