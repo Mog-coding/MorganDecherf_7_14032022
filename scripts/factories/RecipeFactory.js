@@ -23,15 +23,14 @@ export default class RecipeFactory {
         return articleRecipe
     }
 
-    /* retourne des listes <li> d'ingrédients à partir du tableau d'ingrédients 
-    variable */
-    // ingredients = [{ingredient:, quantity:, unit:}, {ingrédient: ...}, {...}
-    createLiIngredients() {
+    /* retourne des listes <li> d'ingrédients à partir tableau ingrédients */
+     createLiIngredients() {
         let newLiIngredient = "";
         /* boucle sur le tableau d'ingrédients et crée <li> avec propriétés quantity et unit si elles existent, retire le ":" si elles n'existent pas */
         for (let el of this.objetRecipe.ingredients) {
-            newLiIngredient = newLiIngredient + `<li><span>${el.ingredient}${(el.ingredient) ? ":" : ""}</span> ${el.quantity || ""} ${el.unit || ""}</li>`;
+            newLiIngredient = newLiIngredient + `<li><span>${el.ingredient}${(el.quantity) ? ":" : ""}</span> ${el.quantity || ""} ${el.unit || ""}</li>`;
         }
         return newLiIngredient
     }
+
 }
