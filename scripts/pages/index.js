@@ -33,13 +33,14 @@ async function init() {
    originalRecipes = [...recipeService.recipes];
 
    // Initialisation affichage des 50 recettes
-   recipesDisplay(filteredRecipes);
+   recipesDisplay(recipeService.filterByArrayTag(null, originalRecipes));
+   //ou recipesDisplay(originalRecipes);
 
 }
 init();
 
 
-/************
+ /************
  *************     FILTRES     *******************
  *************/
 
@@ -151,7 +152,7 @@ function onSelectTag(event) {
    // Object.key <=> array 
    selectedTags[nodeContListUl.id].push(tagName);
 
-   // Filtre tableau recette avec nom tag
+   // Filtre tableau recette avec le nom du tag
    filteredRecipes = recipeService.filterByTag(event.target.parentElement.id, event.target.textContent, filteredRecipes);
 
    // Affichage recettes filtrées
@@ -179,20 +180,9 @@ function onRemoveTag(event) {
    // Remise état origine tableau recette
    filteredRecipes = [...originalRecipes];
 
-   // Filtre filteredRecipes avec tags non supprimés:
-   if (selectedTags["ingredientList"].length > 0)
-      selectedTags["ingredientList"].forEach((el) => {
-         filteredRecipes = recipeService.filterByTag("ingredientList", el, filteredRecipes)
-      })
-   if (selectedTags["appareilList"].length > 0)
-      selectedTags["appareilList"].forEach((el) => {
-         filteredRecipes = recipeService.filterByTag("appareilList", el, filteredRecipes)
-      })
-   if (selectedTags["ustensilList"].length > 0)
-      selectedTags["ustensilList"].forEach((el) => {
-         filteredRecipes = recipeService.filterByTag("ustensilList", el, filteredRecipes)
-      })
-
+   /* Filtre filteredRecipes avec les tags non supprimés: */
+   filteredRecipes = recipeService.filterByArrayTag(selectedTags, filteredRecipes);
+ 
    // Si saisie valide dans globalSearch: filtrer filteredRecipes   
    if (validSearch) {
       filteredRecipes = recipeService.rechercheGlobale(validSearch, filteredRecipes);

@@ -38,18 +38,14 @@ export default class RecipeService {
         // Obj Set -> supprime doublons, spread [... set] conversion set -> array
         listIngredients = [... new Set(listIngredients)];
 
-        console.log(saisie);
-        console.log(listIngredients);
         // Si saisie: filtrer liste fonction saisie
         if (saisie) {
             listIngredients = this.filterListByCapture(listIngredients, saisie)
         }
-        console.log(listIngredients);
 
         // Formatage liste
         listIngredients = this.formateList(listIngredients);
 
-        console.log(exclusionList);
         // Supression des noms tags de la liste via liste d'exclusion
         if (exclusionList) {
             exclusionList.forEach((el) => {
@@ -59,7 +55,6 @@ export default class RecipeService {
                 }
             })
         }
-        console.log(listIngredients);
 
         return listIngredients
     }
@@ -155,18 +150,36 @@ export default class RecipeService {
         });
     }
 
-    // Filtre tableau de recettes fonction tag
+    /* Filtre tableau de recettes en fonction d'un tableau de tags, si pas de tag, pas de modification de filteredRecipes */
+    filterByArrayTag(selectedTags, filteredRecipes) {
+
+        // Filtre tableau recette en fonction tableau de tags
+        for (let i in selectedTags) {
+            selectedTags[i].forEach((tagName) => {
+                filteredRecipes = this.filterByTag(i, tagName, filteredRecipes)
+                console.log(filteredRecipes);
+            })
+        }
+
+        return filteredRecipes
+    }
+
+
+    // Filtre le tableau recettes ils si contiennent le nom d'un tag
     filterByTag(filterType, tagName, filteredRecipes) {
+        /* Si tableau d'objet ingrédients contient string tag -> retourne l'objet recette */
         if (filterType === "ingredientList") {
             filteredRecipes = filteredRecipes.filter((objRecipe) => {
                 return objRecipe.ingredients.find((el) => {
                     return el.ingredient.toLowerCase() === tagName.toLowerCase();
                 })
             })
+            /* Si valeur de propriété appliance = string tag -> retourne objet recette */
         } else if (filterType === "appareilList") {
             filteredRecipes = filteredRecipes.filter((el) => {
                 return el.appliance.toLowerCase() === tagName.toLowerCase();
             })
+            /* Si le tableau ustensils contient string tag -> retourne objet recette */
         } else if (filterType === "ustensilList") {
             filteredRecipes = filteredRecipes.filter((el) => {
                 return el.ustensils.find((el) => {
