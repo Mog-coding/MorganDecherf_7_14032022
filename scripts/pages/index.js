@@ -33,9 +33,7 @@ async function init() {
    originalRecipes = [...recipeService.recipes];
 
    // Initialisation affichage des 50 recettes
-   recipesDisplay(recipeService.filterByArrayTag(null, originalRecipes));
-   //ou recipesDisplay(originalRecipes);
-
+   recipesDisplay(recipeService.filterByArrayTag());
 }
 init();
 
@@ -177,11 +175,8 @@ function onRemoveTag(event) {
    // Supression tag
    event.target.remove();
 
-   // Remise état origine tableau recette
-   filteredRecipes = [...originalRecipes];
-
    /* Filtre filteredRecipes avec les tags non supprimés: */
-   filteredRecipes = recipeService.filterByArrayTag(selectedTags, filteredRecipes);
+   filteredRecipes = recipeService.filterByArrayTag(selectedTags);
  
    // Si saisie valide dans globalSearch: filtrer filteredRecipes   
    if (validSearch) {
@@ -237,6 +232,9 @@ nodeSearch.addEventListener("input", (event) => {
          // Reset tableau recette
          filteredRecipes = [...originalRecipes];
 
+         // Filtrage du tableau avec tags si existent
+         filteredRecipes = recipeService.filterByArrayTag(selectedTags);
+
          // Suppression des recettes affichées
          nodeSectionRecette.innerHTML = null;
 
@@ -257,31 +255,11 @@ nodeSearch.addEventListener("input", (event) => {
       // Si saisie < 3 lettre = pas de saisie
       validSearch = "";
 
-      // Si pas de tag sélectionné
-      if (selectedTags["ingredientList"].length === 0
-         && selectedTags["appareilList"].length === 0
-         && selectedTags["ustensilList"].length === 0) {
-         console.log('pas de tag');
+      filteredRecipes = recipeService.filterByArrayTag(selectedTags);
+      recipesDisplay(filteredRecipes);
 
-         // Affichage de toutes les recettes
-         recipesDisplay(originalRecipes);
-
-         filteredRecipes = [...originalRecipes];
-
-      }
    }
 })
-
-
-
-
-
-
-
-
-
-
-
 
 
 

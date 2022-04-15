@@ -3,6 +3,7 @@ import Recipe from "../model/Recipe.js";
 export default class RecipeService {
     constructor() {
         this.recipes = [];
+        this.originalRecipes = [];
     }
 
     /* Récupération data fetch: tableau recette -> tableau instance recette  */
@@ -18,6 +19,7 @@ export default class RecipeService {
                     const recipesInst = new Recipe(objRecipe);
                     return recipesInst;
                 });
+                this.originalRecipes = [...this.recipes];
             })
     }
 
@@ -55,7 +57,6 @@ export default class RecipeService {
                 }
             })
         }
-
         return listIngredients
     }
 
@@ -151,13 +152,16 @@ export default class RecipeService {
     }
 
     /* Filtre tableau de recettes en fonction d'un tableau de tags, si pas de tag, pas de modification de filteredRecipes */
-    filterByArrayTag(selectedTags, filteredRecipes) {
+    filterByArrayTag(selectedTags) {
+        
+        // Remise état origine tableau recette
+        let filteredRecipes = [...this.originalRecipes];
 
         // Filtre tableau recette en fonction tableau de tags
         for (let i in selectedTags) {
             selectedTags[i].forEach((tagName) => {
                 filteredRecipes = this.filterByTag(i, tagName, filteredRecipes)
-                console.log(filteredRecipes);
+                console.log("filterByArrayTag", filteredRecipes);
             })
         }
 
@@ -196,7 +200,7 @@ export default class RecipeService {
         const arrayRecipeFiltered = [];
         const saisieLow = saisie.toLowerCase();
 
-        console.log(filteredRecipes);
+        console.log("recherche global", filteredRecipes);
 
         filteredRecipes.forEach((instRecipe) => {
             const nameLow = instRecipe.name.toLowerCase();
@@ -220,6 +224,4 @@ export default class RecipeService {
         })
         return arrayRecipeFiltered
     }
-
-
 }
