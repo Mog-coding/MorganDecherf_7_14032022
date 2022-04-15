@@ -161,7 +161,6 @@ export default class RecipeService {
         for (let i in selectedTags) {
             selectedTags[i].forEach((tagName) => {
                 filteredRecipes = this.filterByTag(i, tagName, filteredRecipes)
-                console.log("filterByArrayTag", filteredRecipes);
             })
         }
 
@@ -199,8 +198,6 @@ export default class RecipeService {
     rechercheGlobale(saisie, filteredRecipes) {
         const arrayRecipeFiltered = [];
         const saisieLow = saisie.toLowerCase();
-
-        console.log("recherche global", filteredRecipes);
 
         filteredRecipes.forEach((instRecipe) => {
             const nameLow = instRecipe.name.toLowerCase();

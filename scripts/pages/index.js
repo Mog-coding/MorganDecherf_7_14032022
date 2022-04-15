@@ -77,7 +77,6 @@ const inputFilter = document.querySelectorAll(".inputFilter");
 inputFilter.forEach((el) => {
    el.addEventListener("change", (event) => {
       const saisie = event.target.value.toLowerCase();
-      console.log(event.target.id);
       if (event.target.id === "searchIngredient") {
          createFilterList("#ingredientList", recipeService.getIngredientsList(filteredRecipes, selectedTags.ingredientList, saisie));
       } else if (event.target.id === "searchAppareil") {
@@ -155,7 +154,6 @@ function onSelectTag(event) {
 
    // Affichage recettes filtrées
    recipesDisplay(filteredRecipes);
-   console.log(filteredRecipes);
 }
 
 /********* Suppression tag *********/
@@ -185,7 +183,7 @@ function onRemoveTag(event) {
 
    // Affichage recette filtrées
    recipesDisplay(filteredRecipes);
-   console.log(filteredRecipes);
+
 }
 
 
@@ -221,7 +219,6 @@ nodeSearch.addEventListener("input", (event) => {
 
       // Extraction valeur saisie
       validSearch = event.target.value;
-      console.log(validSearch);
 
       /* Modifie tableau filteredRecipes fonction saisie input */
       filteredRecipes = recipeService.rechercheGlobale(event.target.value, filteredRecipes);
