@@ -14,9 +14,8 @@ let selectedTags = {
    ustensilList: []
 };
 
-// instance globale de class RecipeService
+// Instance globale de class RecipeService
 const recipeService = new RecipeService();
-
 
 /* Récupère tableau recipe via fetch */
 async function init() {
@@ -25,7 +24,7 @@ async function init() {
    *************     FETCH     *******************
    *************/
 
-   /* récupération data + ajout propriété recipeService: array 50 instances recette */
+   /* Récupération data + ajout propriété recipeService: array 50 instances recette */
    await recipeService.fetchData();
 
    // Initialisation tableaux recettes
@@ -38,14 +37,14 @@ async function init() {
 init();
 
 
- /************
- *************     FILTRES     *******************
- *************/
+/************
+*************     FILTRES     *******************
+*************/
 
 /*** Click sur menu dropDown -> ouvre / ferme ***/
 const boutonFilter = document.querySelectorAll(".openDropdown");
 
-/* Listener sur 3 filtres: 1er clic: ouvre dropDown, 2eme clic: ferme */
+/* Listener sur 3 filtres: 1er clic: ouvre dropDown, 2eme clic: ferme. Génère la liste en fonction du filtre cliqué */
 boutonFilter.forEach((el) => {
    el.addEventListener("click", (event) => {
       // Si <input> filtre cliqué contient class appear
@@ -74,6 +73,7 @@ boutonFilter.forEach((el) => {
 /*** Saisie champ recherche filtre ***/
 const inputFilter = document.querySelectorAll(".inputFilter");
 
+// Si saisie dans champ de recherche filtre: régénération liste de filtres fonction saisie
 inputFilter.forEach((el) => {
    el.addEventListener("change", (event) => {
       const saisie = event.target.value.toLowerCase();
@@ -87,7 +87,7 @@ inputFilter.forEach((el) => {
    })
 })
 
-// AM ajout init
+// Crée la liste du filtre et pose un listener click sur chaque élément de la liste
 function createFilterList(nodeFilter, filterList) {
    const nodeFilterUl = document.querySelector(nodeFilter);
 
@@ -105,7 +105,7 @@ function createFilterList(nodeFilter, filterList) {
          list.classList.add("itemLiFilter");
          list.innerHTML = el;
          nodeFilterUl.appendChild(list);
-         // addEventListener sur chaque liste créee
+         // addEventListener sur chaque élément liste créee
          list.addEventListener("click", (event) => onSelectTag(event));
       })
    }
@@ -123,14 +123,14 @@ function onSelectTag(event) {
    const nodeContListUl = event.target.parentElement;
 
    /****** Clic sur liste ******/
-   // Depuis <li> cliquée vers <input> de la <li>
+   // Sélectionne <input> 
    closeDropDown(nodeContListUl.previousElementSibling);
 
    /*** Création du tag ***/
    const tagNode = document.createElement("button");
    tagNode.innerHTML = `${tagName}<img src="assets/icons/croix.svg" alt="" />`;
    tagNode.classList.add("btnTag");
-   // Ajout data type de tag + couleur
+   // Ajout data type de tag + couleur tag
    if (nodeContListUl.id === "ingredientList") {
       tagNode.classList.add("colorIngredient");
       tagNode.setAttribute("data-id", "ingredientList")
@@ -146,7 +146,7 @@ function onSelectTag(event) {
    // Ajout listener sur tag crée avec suppression tag si clic
    tagNode.addEventListener("click", (event) => onRemoveTag(event));
 
-   // Object.key <=> array 
+   // Ajout du nom du Tag à la liste des Tags sélectionnés 
    selectedTags[nodeContListUl.id].push(tagName);
 
    // Filtre tableau recette avec le nom du tag
@@ -156,34 +156,34 @@ function onSelectTag(event) {
    recipesDisplay(filteredRecipes);
 }
 
+
 /********* Suppression tag *********/
 // Supprime un tag, filtre le tableau filteredRecipes avec tags restants
 function onRemoveTag(event) {
 
-   // Supression nom tag de la liste du filtre
+   /* Supression nom tag de la liste du filtre + suppression Tag */
    // idTag -> tag ingredient ou appareil
    const idTag = event.target.dataset.id;
-   // Liste des tags cliqués par type
-   const arrayTag = selectedTags[idTag];
+
    // Récupération index du nom du tag 
-   const indexTag = arrayTag.indexOf(event.target.textContent);
-   // Suppression nom Tag
-   arrayTag.splice(indexTag, 1);
+   const indexTag = selectedTags[idTag].indexOf(event.target.textContent);
+
+   // Suppression nom Tag de selectedTags
+   selectedTags[idTag].splice(indexTag, 1);
 
    // Supression tag
    event.target.remove();
 
-   /* Filtre filteredRecipes avec les tags non supprimés: */
+   /* Pour chaque tag restant, filteredRecipes est filtré une nouvelle fois */
    filteredRecipes = recipeService.filterByArrayTag(selectedTags);
- 
-   // Si saisie valide dans globalSearch: filtrer filteredRecipes   
+
+   // Si saisie valide dans mainSearch: filtrer filteredRecipes   
    if (validSearch) {
-      filteredRecipes = recipeService.rechercheGlobale(validSearch, filteredRecipes);
+      filteredRecipes = recipeService.mainSearch(validSearch, filteredRecipes);
    }
 
    // Affichage recette filtrées
    recipesDisplay(filteredRecipes);
-
 }
 
 
@@ -205,24 +205,23 @@ function recipesDisplay(arrayRecipe) {
 
 
 /************
-*************     Recherche globale     *******************
+*************     Recherche principale     *******************
 *************/
 
-const nodeSearch = document.querySelector("#globalSearch");
+const nodeSearch = document.querySelector("#mainSearch");
 let nodeSectionRecette = document.querySelector(".sectionRecettes");
 
-// EventListener sur <input> champ de recherche recette
+/* Listener sur recherche principale, si saisie valide -> affiche recettes filtrées, sinon message d'erreur ou retour aux recettes d'origine */
 nodeSearch.addEventListener("input", (event) => {
 
-   // si au moins 3 lettres saisie -> recherche
+   // Si au moins 3 lettres saisies -> recherche
    if (event.target.value.length > 2) {
 
       // Extraction valeur saisie
       validSearch = event.target.value;
 
       /* Modifie tableau filteredRecipes fonction saisie input */
-      filteredRecipes = recipeService.rechercheGlobale(event.target.value, filteredRecipes);
-
+      filteredRecipes = recipeService.mainSearch(event.target.value, filteredRecipes);
       // Si saisie inconnue
       if (filteredRecipes.length === 0) {
 
@@ -246,20 +245,15 @@ nodeSearch.addEventListener("input", (event) => {
          recipesDisplay(filteredRecipes)
       }
 
-   }
-   else {
+   } else {
 
       // Si saisie < 3 lettre = pas de saisie
       validSearch = "";
 
       filteredRecipes = recipeService.filterByArrayTag(selectedTags);
       recipesDisplay(filteredRecipes);
-
    }
 })
-
-
-
 
 
 

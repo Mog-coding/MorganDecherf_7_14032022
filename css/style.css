@@ -18,7 +18,7 @@
   border: none;
 }
 .search input::placeholder {
-  color: #ADADAD; /*#e7e7e7*/
+  color: #adadad; /*#e7e7e7*/
   font-size: 1.35em;
 }
 .search img {
@@ -41,6 +41,9 @@
 .sectionFiltres {
   display: flex;
   justify-content: flex-start;
+}
+.sectionFiltres input:hover {
+  cursor: pointer;
 }
 .colorIngredient {
   background-color: #3282f7;
@@ -134,16 +137,15 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 .noFilter {
   font-weight: normal;
-  padding: 0 0 17px 17px; 
+  padding: 0 0 17px 17px;
 }
-.itemLiFilter{
- transform: scale(1);
+.itemLiFilter {
+  transform: scale(1);
 }
 .itemLiFilter:hover {
   cursor: pointer;
   transform: scale(1.09) translateX(6px);
   transition: transform 0.1s linear;
-  
 }
 
 /********************** articles recettes **********************/
@@ -225,7 +227,7 @@ article {
   -webkit-box-orient: vertical;
 }
 
-/********************** articles recettes **********************/
+/********************** medias queries **********************/
 
 @media screen and (max-width: 1300px) {
   .wrapper {
@@ -245,10 +247,12 @@ article {
   .btnFilter {
     width: 100%;
     height: unset;
+    flex-direction: column;
   }
+
   .btnFilter ul {
     position: static;
-}
+  }
 }
 @media screen and (max-width: 790px) {
   article {
